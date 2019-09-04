@@ -18,6 +18,7 @@ POSTS_JIS_ZIP = {}
 POSTS_ZIP = {}
 POSTS_JIS = {}
 ORM = {}
+ORM_CODE = {}
 
 GEOS = []
 NAME_GEOS = {}
@@ -297,6 +298,10 @@ POSTS_JIS_ZIP.each do |code, data|
   name = ""
   towns = town.split(/(.+?町|.+?村|[東西南北]?[一二三四五六七八九十廿]+(?:条|条通り)|[０-９].+$)(?!#{gap})/)
   cities = city.split(/(#{dic.join("|")}|.+?#{gap}(?!#{gap}))/)
+
+  p ORM_CODE[jiscode + zipcode] if ORM_CODE[jiscode + zipcode]
+  ORM_CODE[jiscode + zipcode] = []
+
   if 0 < etc.size
     etc.each_with_index do |etc_item, idx|
       ruby4_item = ruby4[idx]
@@ -307,6 +312,7 @@ POSTS_JIS_ZIP.each do |code, data|
         *towns,
         "（#{etc_item}）"
       )
+      ORM_CODE[jiscode + zipcode].push ORM[name]
       ORM[name]["zipcode"] = zipcode
       ORM[name]["jiscode"] = jiscode
       ORM[name]["ruby"] = to_hiragana [ruby1,ruby2,ruby3,ruby4_item].join("").unicode_normalize(:nfkc)
@@ -319,6 +325,7 @@ POSTS_JIS_ZIP.each do |code, data|
       *cities,
       *towns,
     )
+    ORM_CODE[jiscode + zipcode].push ORM[name]
     ORM[name]["zipcode"] = zipcode
     ORM[name]["jiscode"] = jiscode
     ORM[name]["ruby"] = to_hiragana [ruby1,ruby2,ruby3].join("").unicode_normalize(:nfkc)
@@ -350,6 +357,11 @@ open(FNAME_GEOCODE) do |f|
         *cities,
         *towns,
       )
+      (ORM_CODE[jiscode + zipcode] || []).each do |orm|
+        orm["on"] = [lat, lon]
+        orm["tel"] = tel
+        orm["address"] = address
+      end
       ETCS[name] = etc if 0 < etc.size
       kata = [ruby1,ruby2,ruby3].join("").unicode_normalize(:nfkc)
       hira = to_hiragana(kata)
@@ -368,6 +380,9 @@ open(FNAME_GEOCODE) do |f|
         ORM[name]["zipcode"] = zipcode
         ORM[name]["jiscode"] = jiscode
         ORM[name]["ruby"] = hira
+        ORM[name]["on"] = [lat, lon]
+        ORM[name]["tel"] = tel
+        ORM[name]["address"] = address
       else
         # 市役所の場合
         ruby1 = ruby1.unicode_normalize(:nfkc)
@@ -390,6 +405,9 @@ open(FNAME_GEOCODE) do |f|
         ORM[name]["zipcode"] = zipcode
         ORM[name]["jiscode"] = jiscode
         ORM[name]["ruby"] = hira
+        ORM[name]["on"] = [lat, lon]
+        ORM[name]["tel"] = tel
+        ORM[name]["address"] = address
       end
       kata = to_katakana(hira)
     end
@@ -427,7 +445,7 @@ DIC.each do |key, dic|
   dic.replace dic.sort.to_h
 end
 File.open(FNAME_SNAP_HD + "orm.yml","w") do |f|
-  f.write YAML.dump ORM.sort.to_h
+  f.write YAML.dump ORM.values.sort_by {|o| o["zipcode"] || "" }
 end
 File.open(FNAME_SNAP_HD + "dic.yml","w") do |f|
   f.write YAML.dump DIC
