@@ -107,8 +107,16 @@ def name_reduce!(root)
   root
 end
 
-def label_set(list, key, label)
-  (LABELS[key], unit) = label.split(/(地区$|[都府県市郡区村町]$)/)
+def label_set(list, name, label)
+  (LABELS[name], unit) = label.split(/(地区$|[都府県市郡区村町]$)/)
+  _id = list.join("-")
+  ORM[name] = {
+    "_id"        => _id,
+    "name"       => name,
+    "label"      => LABELS[name],
+    "unit"       => unit,
+  }
+
   return if unit == label
   return unless unit
   label.tr!("()（）","")
@@ -145,6 +153,13 @@ def name_set(names, *dirty)
   names[full] ||= 0
   if full[/#{tail}.#{tail}$/]
     LABELS[full] = tail
+    _id = list.join("-")
+    ORM[full] = {
+      "_id"        => _id,
+      "name"       => full,
+      "label"      => tail,
+      "unit"       => nil,
+    }
   else
     label_set(list, full, tail)
   end
@@ -283,7 +298,8 @@ POSTS_JIS_ZIP.each do |code, data|
   towns = town.split(/(.+?町|.+?村|[東西南北]?[一二三四五六七八九十廿]+(?:条|条通り)|[０-９].+$)(?!#{gap})/)
   cities = city.split(/(#{dic.join("|")}|.+?#{gap}(?!#{gap}))/)
   if 0 < etc.size
-    etc.each do |etc_item|
+    etc.each_with_index do |etc_item, idx|
+      ruby4_item = ruby4[idx]
       name = name_set(
         NAMES,
         prefecture,
@@ -291,6 +307,9 @@ POSTS_JIS_ZIP.each do |code, data|
         *towns,
         "（#{etc_item}）"
       )
+      ORM[name]["zipcode"] = zipcode
+      ORM[name]["jiscode"] = jiscode
+      ORM[name]["ruby"] = to_hiragana [ruby1,ruby2,ruby3,ruby4_item].join("").unicode_normalize(:nfkc)
     end
     ETCS[name] = etc 
   else
@@ -299,7 +318,10 @@ POSTS_JIS_ZIP.each do |code, data|
       prefecture,
       *cities,
       *towns,
-      )
+    )
+    ORM[name]["zipcode"] = zipcode
+    ORM[name]["jiscode"] = jiscode
+    ORM[name]["ruby"] = to_hiragana [ruby1,ruby2,ruby3].join("").unicode_normalize(:nfkc)
   end
 end
 
@@ -343,6 +365,9 @@ open(FNAME_GEOCODE) do |f|
           prefecture,
           building[-2..]
         )
+        ORM[name]["zipcode"] = zipcode
+        ORM[name]["jiscode"] = jiscode
+        ORM[name]["ruby"] = hira
       else
         # 市役所の場合
         ruby1 = ruby1.unicode_normalize(:nfkc)
@@ -362,6 +387,9 @@ open(FNAME_GEOCODE) do |f|
             building,
           )
         end
+        ORM[name]["zipcode"] = zipcode
+        ORM[name]["jiscode"] = jiscode
+        ORM[name]["ruby"] = hira
       end
       kata = to_katakana(hira)
     end
@@ -398,6 +426,9 @@ DIC.each do |key, dic|
   end
   dic.replace dic.sort.to_h
 end
+File.open(FNAME_SNAP_HD + "orm.yml","w") do |f|
+  f.write YAML.dump ORM.sort.to_h
+end
 File.open(FNAME_SNAP_HD + "dic.yml","w") do |f|
   f.write YAML.dump DIC
 end
@@ -411,10 +442,10 @@ File.open(FNAME_SNAP_HD + "label.yml","w") do |f|
   f.write YAML.dump label_reduce(NAMES, CHECKS).sort.to_h
 end
 
-
 # data structure check.
 YAML.load_file(FNAME_OUTPUT_YAML)
 YAML.load_file(FNAME_SNAP_HD + "name.yml")
 YAML.load_file(FNAME_SNAP_HD + "label.yml")
 YAML.load_file(FNAME_SNAP_HD + "etc.yml")
 YAML.load_file(FNAME_SNAP_HD + "dic.yml")
+YAML.load_file(FNAME_SNAP_HD + "orm.yml")
