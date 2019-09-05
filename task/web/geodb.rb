@@ -123,9 +123,12 @@ def label_set(list, name, label)
   label.tr!("()（）","")
   unit.tr!("()（）","")
   prefecture = list[0]
-  DIC[prefecture] ||= {}
-  DIC[prefecture][unit] ||= {}
-  DIC[prefecture][unit][label] = 0
+  DIC[prefecture] ||= {'dic' => []}
+  DIC[prefecture][unit] ||= []
+  DIC[prefecture][unit].push label
+  if PAST_DIC[prefecture]['dic'].member?(label) || label[/島$|[都道府県島市郡区村町寺院].+/]
+    DIC[prefecture]['dic'].push label
+  end
 end
 
 def name_set(names, *dirty)
@@ -163,6 +166,9 @@ def name_set(names, *dirty)
     }
   else
     label_set(list, full, tail)
+  end
+  if /北海道北見市端野町/ === full
+    p dirty
   end
   full
 end
@@ -292,14 +298,11 @@ POSTS_JIS_ZIP.each do |code, data|
   (zipcode, jiscode, prefecture, city, town, etc, ruby1, ruby2, ruby3, ruby4) = data
   p ORM_CODE[jiscode + zipcode] if ORM_CODE[jiscode + zipcode]
 
-  divisions = "村町市島郡区"
-  dic = divisions.each_char.to_a.map do |c|
-    PAST_DIC.dig(prefecture, c)&.keys
-  end.compact
-  gap = "[#{divisions}）]"
+  dic = PAST_DIC[prefecture]['dic'].map{|s| s + '|'}.join("")
+  gap = "寺門前|院門前|村|町|市|島|郡|区|）"
   name = ""
-  towns = town.split(/(.+?町|.+?村|[東西南北]?[一二三四五六七八九十廿]+(?:条|条通り)|[０-９].+$)(?!#{gap})/)
-  cities = city.split(/(#{dic.join("|")}|.+?#{gap}(?!#{gap}))/)
+  towns = town.split(/(#{dic}[０-９].+$|[東西南北]?[０-９一二三四五六七八九十廿]+(?:条通り|番町|条|番|区)|.+?(?:区|町|村))/)
+  cities = city.split(/(#{dic}.+?(?:#{gap})(?!#{gap}))/)
 
   name = name_set(
     NAMES,
@@ -359,13 +362,10 @@ open(FNAME_GEOCODE) do |f|
     post = POSTS_ZIP[zipcode] || POSTS_JIS[jiscode]
     if post
       (_zipcode, _jiscode, prefecture, city, town, etc, ruby1, ruby2, ruby3, ruby4) = post
-      divisions = "村町市島郡区"
-      dic = divisions.each_char.to_a.map do |c|
-        PAST_DIC.dig(prefecture, c)&.keys
-      end.compact
-      gap = "[#{divisions}）]"
-      towns = town.split(/(.+?町|.+?村|[東西南北]?[一二三四五六七八九十廿]+(?:条|条通り)|[０-９].+$)(?!#{gap})/)
-      cities = city.split(/(#{dic.join("|")}|.+?#{gap}(?!#{gap}))/)
+      dic = PAST_DIC[prefecture]['dic'].map{|s| s + '|'}.join("")
+      gap = "寺門前|院門前|村|町|市|島|郡|区|）"
+      towns = town.split(/(#{dic}[０-９].+$|[東西南北]?[０-９一二三四五六七八九十廿]+(?:条通り|番町|条|番|区)|.+?(?:区|町|村))/)
+      cities = city.split(/(#{dic}.+?(?:#{gap})(?!#{gap}))/)
       name = name_set(
         NAME_GEOS,
         prefecture,
@@ -455,7 +455,7 @@ end
 
 DIC.each do |key, dic|
   dic.each do |k, d|
-    d.replace d.sort.reverse.to_h
+    dic[k] =  d.sort_by {|o| [- o.size, o] }.uniq
   end
   dic.replace dic.sort.to_h
 end
