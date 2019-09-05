@@ -302,6 +302,16 @@ POSTS_JIS_ZIP.each do |code, data|
   p ORM_CODE[jiscode + zipcode] if ORM_CODE[jiscode + zipcode]
   ORM_CODE[jiscode + zipcode] = []
 
+  name = name_set(
+    NAMES,
+    prefecture,
+    *cities,
+    *towns,
+  )
+  ORM_CODE[jiscode + zipcode].push ORM[name]
+  ORM[name]["zipcode"] = zipcode
+  ORM[name]["jiscode"] = jiscode
+  ORM[name]["ruby"] = to_hiragana [ruby1,ruby2,ruby3].join("").unicode_normalize(:nfkc)
   if 0 < etc.size
     etc.each_with_index do |etc_item, idx|
       ruby4_item = ruby4[idx]
@@ -312,23 +322,9 @@ POSTS_JIS_ZIP.each do |code, data|
         *towns,
         "（#{etc_item}）"
       )
-      ORM_CODE[jiscode + zipcode].push ORM[name]
-      ORM[name]["zipcode"] = zipcode
-      ORM[name]["jiscode"] = jiscode
       ORM[name]["ruby"] = to_hiragana [ruby1,ruby2,ruby3,ruby4_item].join("").unicode_normalize(:nfkc)
     end
     ETCS[name] = etc 
-  else
-    name = name_set(
-      NAMES,
-      prefecture,
-      *cities,
-      *towns,
-    )
-    ORM_CODE[jiscode + zipcode].push ORM[name]
-    ORM[name]["zipcode"] = zipcode
-    ORM[name]["jiscode"] = jiscode
-    ORM[name]["ruby"] = to_hiragana [ruby1,ruby2,ruby3].join("").unicode_normalize(:nfkc)
   end
 end
 
