@@ -108,6 +108,8 @@ def name_reduce!(root)
   root
 end
 
+REG_NUMBER_FT = /(第)?[０-９].+$|[東西南北]?[０-９一二三四五六七八九十廿]+(?:条通り|番町|条町|日市|ノ宮|条|番|区)$/
+REG_NUMBER_HD = /^深草大亀谷|^嵯峨小倉|^横大路下|^宇多野|^下鳥羽|^上鳥羽|^水海道|^五個荘|^松ケ崎|^嵯峨野|^都祁|^.+?[堂寺院](ノ前|門前)?|^.+?(島|温泉|寺|院)|^[東西南北]?[０-９一二三四五六七八九十廿]+(?:条通り|番町|条町|日市|ノ宮|条|番|区)/
 def label_set(list, name, label)
   (LABELS[name], unit) = label.split(/(地区$|[都府県市郡区村町]$)/)
   _id = list.join("-")
@@ -126,8 +128,43 @@ def label_set(list, name, label)
   DIC[prefecture] ||= {'dic' => []}
   DIC[prefecture][unit] ||= []
   DIC[prefecture][unit].push label
-  if PAST_DIC[prefecture]['dic'].member?(label) || label[/島$|[都道府県島市郡区村町寺院].+/]
+  
+  return if PAST_DIC[label]
+  if PAST_DIC[prefecture]['dic'].member? label
     DIC[prefecture]['dic'].push label
+  end
+  if /島$|[都道府県島市郡区村町寺院].+/ === label
+    DIC[prefecture]['dic'].push label
+  end
+  if REG_NUMBER_FT === label
+    head = label.sub(REG_NUMBER_FT,"")
+    hit = label[REG_NUMBER_FT]
+    case head.size
+    when 0
+    when 1
+      p [head, hit, label]
+      DIC[prefecture]['dic'].push label
+      DIC[prefecture]['dic'].delete head
+    else
+      p [head, hit, label]
+      DIC[prefecture]['dic'].push head
+      DIC[prefecture]['dic'].delete label
+    end
+  end
+  if REG_NUMBER_HD === label
+    foot = label.sub(REG_NUMBER_HD,"")
+    hit = label[REG_NUMBER_HD]
+    case foot.size
+    when 0
+    when 1
+      p [hit, foot, label] unless /[都府県市郡区村町]/ === foot
+      DIC[prefecture]['dic'].push label
+      DIC[prefecture]['dic'].delete hit
+    else
+      p [hit, foot, label]
+      DIC[prefecture]['dic'].push hit 
+      DIC[prefecture]['dic'].delete label
+    end
   end
 end
 
@@ -167,7 +204,7 @@ def name_set(names, *dirty)
   else
     label_set(list, full, tail)
   end
-  if /北海道北見市端野町/ === full
+  if /つつじが丘/ === full
     p dirty
   end
   full
@@ -301,7 +338,7 @@ POSTS_JIS_ZIP.each do |code, data|
   dic = PAST_DIC[prefecture]['dic'].map{|s| s + '|'}.join("")
   gap = "寺門前|院門前|村|町|市|島|郡|区|）"
   name = ""
-  towns = town.split(/(#{dic}[０-９].+$|[東西南北]?[０-９一二三四五六七八九十廿]+(?:条通り|番町|条|番|区)|.+?(?:区|町|村))/)
+  towns = town.split(/(#{dic}.+?(?:区|町|村))/)
   cities = city.split(/(#{dic}.+?(?:#{gap})(?!#{gap}))/)
 
   name = name_set(
@@ -364,7 +401,7 @@ open(FNAME_GEOCODE) do |f|
       (_zipcode, _jiscode, prefecture, city, town, etc, ruby1, ruby2, ruby3, ruby4) = post
       dic = PAST_DIC[prefecture]['dic'].map{|s| s + '|'}.join("")
       gap = "寺門前|院門前|村|町|市|島|郡|区|）"
-      towns = town.split(/(#{dic}[０-９].+$|[東西南北]?[０-９一二三四五六七八九十廿]+(?:条通り|番町|条|番|区)|.+?(?:区|町|村))/)
+      towns = town.split(/(#{dic}.+?(?:区|町|村))/)
       cities = city.split(/(#{dic}.+?(?:#{gap})(?!#{gap}))/)
       name = name_set(
         NAME_GEOS,
