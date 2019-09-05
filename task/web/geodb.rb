@@ -109,9 +109,15 @@ def name_reduce!(root)
 end
 
 REG_NUMBER_FT = /(第)?[０-９].+$|[東西南北]?[０-９一二三四五六七八九十廿]+(?:条通り|番町|条町|日市|ノ宮|条|番|区)$/
-REG_NUMBER_HD = /^深草大亀谷|^嵯峨小倉|^横大路下|^宇多野|^下鳥羽|^上鳥羽|^水海道|^五個荘|^松ケ崎|^嵯峨野|^都祁|^.+?[堂寺院](ノ前|門前)?|^.+?(島|温泉|寺|院)|^[東西南北]?[０-９一二三四五六七八九十廿]+(?:条通り|番町|条町|日市|ノ宮|条|番|区)/
+REG_NUMBER_HD = /^一番堀通町|深草大亀谷|^嵯峨小倉|^横大路下|^粟島浦村|^宇多野|^下鳥羽|^上鳥羽|^水海道|^五個荘|^松ケ崎|^岩船郡|^都祁|^.+?[堂寺院](ノ前|門前)?|^.+?(島|温泉|寺|院)|^[東西南北]?[０-９一二三四五六七八九十廿]+(?:条通り|番町|条町|日市|ノ宮|条|番|区)/
 def label_set(list, name, label)
-  (LABELS[name], unit) = label.split(/(地区$|[都府県市郡区村町]$)/)
+  if name[/#{label}.#{label}$/]
+    LABELS[name] = label
+    unit = nil
+  else
+    (LABELS[name], unit) = label.split(/(町区$|地区$|[都府県市郡区村町]$)/)
+  end
+
   _id = list.join("-")
   ORM[name] = {
     "_id"        => _id,
@@ -125,45 +131,50 @@ def label_set(list, name, label)
   label.tr!("()（）","")
   unit.tr!("()（）","")
   prefecture = list[0]
-  DIC[prefecture] ||= {'dic' => []}
+
+  if /甲子園/ === name
+    puts list.join(" ")
+  end
+  if 2 < list.size && /([都府県市郡区村町]$)/ === list[-2] && /(^[都府県市郡区村町])/ === list[-1]
+    puts list.join(" ")
+  end
+
+  chk = PAST_DIC[prefecture]['dic']
+  DIC[prefecture] ||= {'dic' => chk, 'cut' => PAST_DIC[prefecture]['cut']}
   DIC[prefecture][unit] ||= []
   DIC[prefecture][unit].push label
-  
+  dic =      DIC[prefecture]['dic']
+  cut =      DIC[prefecture]['cut']
+
   return if PAST_DIC[label]
-  if PAST_DIC[prefecture]['dic'].member? label
-    DIC[prefecture]['dic'].push label
+  unless dic.member? label
+    if /島$|[都道府県島市郡区村町寺院].+/ === label
+      dic.push label
+    end
   end
-  if /島$|[都道府県島市郡区村町寺院].+/ === label
-    DIC[prefecture]['dic'].push label
-  end
+
   if REG_NUMBER_FT === label
     head = label.sub(REG_NUMBER_FT,"")
-    hit = label[REG_NUMBER_FT]
+    foot = label[REG_NUMBER_FT]
     case head.size
-    when 0
-    when 1
-      p [head, hit, label]
-      DIC[prefecture]['dic'].push label
-      DIC[prefecture]['dic'].delete head
+    when 0, 1
+      dic.push label unless dic.member? label
     else
-      p [head, hit, label]
-      DIC[prefecture]['dic'].push head
-      DIC[prefecture]['dic'].delete label
+      puts [prefecture, chk.member?(head), dic.member?(head), "2...", head, foot, "  ", list].join(" ")
+      cut.push head unless cut.member? head
+      dic.push head unless dic.member? head
     end
   end
   if REG_NUMBER_HD === label
     foot = label.sub(REG_NUMBER_HD,"")
-    hit = label[REG_NUMBER_HD]
+    head = label[REG_NUMBER_HD]
     case foot.size
-    when 0
-    when 1
-      p [hit, foot, label] unless /[都府県市郡区村町]/ === foot
-      DIC[prefecture]['dic'].push label
-      DIC[prefecture]['dic'].delete hit
+    when 0, 1
+      dic.push label unless dic.member? label
     else
-      p [hit, foot, label]
-      DIC[prefecture]['dic'].push hit 
-      DIC[prefecture]['dic'].delete label
+      puts [prefecture, chk.member?(head), dic.member?(head), "4...", head, foot, "  ", list].join(" ")
+      cut.push head unless cut.member? head
+      dic.push head unless dic.member? head
     end
   end
 end
@@ -192,21 +203,7 @@ def name_set(names, *dirty)
     list.push tail
   end
   names[full] ||= 0
-  if full[/#{tail}.#{tail}$/]
-    LABELS[full] = tail
-    _id = list.join("-")
-    ORM[full] = {
-      "_id"        => _id,
-      "name"       => full,
-      "label"      => tail,
-      "unit"       => nil,
-    }
-  else
-    label_set(list, full, tail)
-  end
-  if /つつじが丘/ === full
-    p dirty
-  end
+  label_set(list, full, tail)
   full
 end
 
@@ -305,7 +302,7 @@ open(FNAME_ZIPCODE) do |f|
           old[9] = to_etc "()", *[old[8], *old[9], ruby3].map {|s| s.gsub(rubyhd, "") }
           old[8] = rubyhd
         else
-          p [[old[3], old[4], old[8]],[city, town, ruby3]]
+          puts [[old[3], old[4], old[8]].join(" "),[city, town, ruby3].join(" ")].join(" - ")
         end
       else
         old[5] = to_etc "（）", old[4], *old[5], town
@@ -333,11 +330,10 @@ end
 p "...ZIPCODE structure"
 POSTS_JIS_ZIP.each do |code, data|
   (zipcode, jiscode, prefecture, city, town, etc, ruby1, ruby2, ruby3, ruby4) = data
-  p ORM_CODE[jiscode + zipcode] if ORM_CODE[jiscode + zipcode]
+  puts ORM_CODE[jiscode + zipcode] if ORM_CODE[jiscode + zipcode]
 
   dic = PAST_DIC[prefecture]['dic'].map{|s| s + '|'}.join("")
   gap = "寺門前|院門前|村|町|市|島|郡|区|）"
-  name = ""
   towns = town.split(/(#{dic}.+?(?:区|町|村))/)
   cities = city.split(/(#{dic}.+?(?:#{gap})(?!#{gap}))/)
 
@@ -491,16 +487,20 @@ File.open(FNAME_OUTPUT_YAML,"w") do |f|
 end
 
 DIC.each do |key, dic|
+  if 0 < dic['cut'].size
+    r = /^(#{dic['cut'].join("|")})../
+    dic['dic'].reject! {|s| r === s }
+  end
   dic.each do |k, d|
     dic[k] =  d.sort_by {|o| [- o.size, o] }.uniq
   end
   dic.replace dic.sort.to_h
 end
-File.open(FNAME_SNAP_HD + "orm.yml","w") do |f|
-  f.write YAML.dump ORM.values.sort_by {|o| o["zipcode"] || "" }
-end
 File.open(FNAME_SNAP_HD + "dic.yml","w") do |f|
   f.write YAML.dump DIC
+end
+File.open(FNAME_SNAP_HD + "orm.yml","w") do |f|
+  f.write YAML.dump ORM.values.sort_by {|o| o["zipcode"] || "" }
 end
 File.open(FNAME_SNAP_HD + "etc.yml","w") do |f|
   f.write YAML.dump ETCS
