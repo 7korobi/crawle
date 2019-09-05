@@ -290,6 +290,8 @@ end
 p "...ZIPCODE structure"
 POSTS_JIS_ZIP.each do |code, data|
   (zipcode, jiscode, prefecture, city, town, etc, ruby1, ruby2, ruby3, ruby4) = data
+  p ORM_CODE[jiscode + zipcode] if ORM_CODE[jiscode + zipcode]
+
   divisions = "村町市島郡区"
   dic = divisions.each_char.to_a.map do |c|
     PAST_DIC.dig(prefecture, c)&.keys
@@ -302,15 +304,30 @@ POSTS_JIS_ZIP.each do |code, data|
   name = name_set(
     NAMES,
     prefecture,
+  )
+  ORM[name]["ruby"] = to_hiragana [ruby1].join("").unicode_normalize(:nfkc) unless ORM[name]["ruby"]
+
+  name = name_set(
+    NAMES,
+    prefecture,
+    *cities,
+  )
+  ORM[name]["ruby"] = to_hiragana [ruby1,ruby2].join("").unicode_normalize(:nfkc) unless ORM[name]["ruby"]
+
+  name = name_set(
+    NAMES,
+    prefecture,
     *cities,
     *towns,
   )
-  p ORM_CODE[jiscode + zipcode] if ORM_CODE[jiscode + zipcode]
-  ORM_CODE[jiscode + zipcode] = [ORM[name]]
-  ORM[name]["zipcode"] = zipcode
-  ORM[name]["jiscode"] = jiscode
-  ORM[name]["ruby"] = to_hiragana [ruby1,ruby2,ruby3].join("").unicode_normalize(:nfkc)
-  if 0 < etc.size
+  ORM[name]["ruby"] = to_hiragana [ruby1,ruby2,ruby3].join("").unicode_normalize(:nfkc) unless ORM[name]["ruby"]
+
+  case etc.size
+  when 0
+    ORM[name]["zipcode"] = zipcode
+    ORM[name]["jiscode"] = jiscode
+    ORM_CODE[jiscode + zipcode] = [ORM[name]]
+  else
     etc.each_with_index do |etc_item, idx|
       ruby4_item = ruby4[idx]
       name = name_set(
@@ -321,6 +338,10 @@ POSTS_JIS_ZIP.each do |code, data|
         "（#{etc_item}）"
       )
       ORM[name]["ruby"] = to_hiragana [ruby1,ruby2,ruby3,ruby4_item].join("").unicode_normalize(:nfkc)
+    end
+    if etc.size == 1
+      ORM[name]["zipcode"] = zipcode
+      ORM[name]["jiscode"] = jiscode
     end
     ETCS[name] = etc 
   end
