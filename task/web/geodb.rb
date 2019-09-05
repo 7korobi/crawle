@@ -299,16 +299,14 @@ POSTS_JIS_ZIP.each do |code, data|
   towns = town.split(/(.+?町|.+?村|[東西南北]?[一二三四五六七八九十廿]+(?:条|条通り)|[０-９].+$)(?!#{gap})/)
   cities = city.split(/(#{dic.join("|")}|.+?#{gap}(?!#{gap}))/)
 
-  p ORM_CODE[jiscode + zipcode] if ORM_CODE[jiscode + zipcode]
-  ORM_CODE[jiscode + zipcode] = []
-
   name = name_set(
     NAMES,
     prefecture,
     *cities,
     *towns,
   )
-  ORM_CODE[jiscode + zipcode].push ORM[name]
+  p ORM_CODE[jiscode + zipcode] if ORM_CODE[jiscode + zipcode]
+  ORM_CODE[jiscode + zipcode] = [ORM[name]]
   ORM[name]["zipcode"] = zipcode
   ORM[name]["jiscode"] = jiscode
   ORM[name]["ruby"] = to_hiragana [ruby1,ruby2,ruby3].join("").unicode_normalize(:nfkc)
