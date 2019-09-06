@@ -144,9 +144,12 @@ def label_set(list, name, label)
   end
 
   # check.
-  if /.{2,}[東西南北元中][町村郡区]$/ === label
-    CHK1[prefecture] ||= Hash.new(0)
-    CHK1[prefecture][label[0..-3]] += 1
+  if /.{2,}[東西南北元中上下新][町村郡区]$/ === label
+    head = label[0..-3]
+    unless /(の|ノ)$/ === head
+      CHK1[prefecture] ||= Hash.new(0)
+      CHK1[prefecture][label[0..-3]] += 1
+    end
   end
   
   # check.
