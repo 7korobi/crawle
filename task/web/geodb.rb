@@ -32,6 +32,8 @@ TO_PREFECTURE = {}
 
 PAST_DIC = YAML.load_file(FNAME_SNAP_HD + "dic.yml")
 PAST_DIC.each do |key, dic|
+  dic['dic'] ||= []
+  dic['cut'] ||= []
   if 0 < dic['cut'].size
     r1 = /^(#{dic['cut'].join("|")})(東|西|南|北|..+)$/
     dic['dic'].reject! {|s| r1 === s }
