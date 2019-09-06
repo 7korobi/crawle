@@ -175,12 +175,9 @@ def label_set(list, name, label)
   return if unit == label
 
   label.tr!("()（）","")
-
-  if unit
-    unit.tr!("()（）","")
-    DIC[prefecture][unit] ||= []
-    DIC[prefecture][unit].push label
-  end
+  unit.tr!("()（）","") if unit
+  DIC[prefecture][unit || 'etc'] ||= []
+  DIC[prefecture][unit || 'etc'].push label unless DIC[prefecture][unit || 'etc'].member? label
 
   return unless unit
   return if PAST_DIC[label]
@@ -550,7 +547,7 @@ DIC.each do |key, dic|
   dic.each do |k, d|
     dic[k] =  d.sort_by {|o| [- o.size, o] }.uniq
   end
-  dic.replace dic.sort.to_h
+  DIC[key] = dic.sort.to_h 
 end
 DIC['chk'] = CHK1
 File.open(FNAME_SNAP_HD + "dic.yml","w") do |f|
