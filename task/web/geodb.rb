@@ -31,13 +31,20 @@ DIC = {}
 TO_PREFECTURE = {}
 
 PAST_DIC = YAML.load_file(FNAME_SNAP_HD + "dic.yml")
-PAST_DIC.each do |key, dic|
+PAST_DIC.each do |prefecture, dic|
+  PAST_DIC['chk'][prefecture]&.each do |key, size|
+    if 1 < size
+      # 北町南町など。2以上ある場合はグルーピング対象。
+      PAST_DIC[prefecture]['dic'].unshift key
+    end
+  end
   dic['dic'] ||= []
   dic['cut'] ||= []
   if 0 < dic['cut'].size
     r1 = /^(#{dic['cut'].join("|")})(東|西|南|北|..+)$/
     dic['dic'].reject! {|s| r1 === s }
   end
+  # 異常値は固有名詞の辞書登録をしない。
   r2 = /^(市市|区区|町町|村村|郡郡|都都|道道|府府|県県|市|区|町|村|郡|都|道|府|県)$/
   dic['dic'].reject! {|s| r2 === s }
 end
@@ -118,6 +125,7 @@ def name_reduce!(root)
   root
 end
 
+CHK1 = {}
 REG_NUMBER_FT = /[東西南北]$|(「)?(第)?[０-９].+$|[東西南北]?[０-９一二三四五六七八九十廿～]+(条通り|番町|条町|日市|ノ宮|条|線|番|区)$/
 REG_NUMBER_HD = /^.+?[堂寺院](ノ前|門前)?|^[東西南北]?[０-９一二三四五六七八九十廿～]+(条通り|番町|条町|日市(場町|町中地)?|ノ宮|条|線|区)/
 def label_set(list, name, label)
@@ -127,6 +135,7 @@ def label_set(list, name, label)
   dic =      DIC[prefecture]['dic']
   cut =      DIC[prefecture]['cut']
 
+  # 分割しすぎた市区町村を、名前に付け戻す。結合nameは変化しないので注意。
   if /^(ノ[上]|ノ[^ァ-ヶ]+町|ノ坪|町区|地区|[都府県市郡区村町])$/ === label
     list.pop
     head = list[-1]
@@ -134,6 +143,12 @@ def label_set(list, name, label)
     dic.push label unless dic.member? label
   end
 
+  # check.
+  if /.{2,}[東西南北元中][町村郡区]$/ === label
+    CHK1[prefecture] ||= Hash.new(0)
+    CHK1[prefecture][label[0..-3]] += 1
+  end
+  
   # check.
   if /^(市市|区区|町町|村村|郡郡|都都|道道|府府|県県)$/ === label
     puts ["d...", list].join(" ")
@@ -534,6 +549,7 @@ DIC.each do |key, dic|
   end
   dic.replace dic.sort.to_h
 end
+DIC['chk'] = CHK1
 File.open(FNAME_SNAP_HD + "dic.yml","w") do |f|
   f.write YAML.dump DIC
 end
