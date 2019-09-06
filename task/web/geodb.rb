@@ -31,6 +31,14 @@ DIC = {}
 TO_PREFECTURE = {}
 
 PAST_DIC = YAML.load_file(FNAME_SNAP_HD + "dic.yml")
+PAST_DIC.each do |key, dic|
+  if 0 < dic['cut'].size
+    r1 = /^(#{dic['cut'].join("|")})(東|西|南|北|..+)$/
+    dic['dic'].reject! {|s| r1 === s }
+  end
+  r2 = /^(市市|区区|町町|村村|郡郡|都都|道道|府府|県県|市|区|町|村|郡|都|道|府|県)$/
+  dic['dic'].reject! {|s| r2 === s }
+end
 
 def find_header(*args)
   ( 1 .. args.map(&:size).min ).reverse_each do |idx|
@@ -108,10 +116,28 @@ def name_reduce!(root)
   root
 end
 
-REG_NUMBER_FT = /(第)?[０-９].+$|[東西南北]?[０-９一二三四五六七八九十廿]+(?:条通り|番町|条町|日市|ノ宮|条|番|区)$/
-REG_NUMBER_HD = /^一番堀通町|深草大亀谷|^嵯峨小倉|^横大路下|^粟島浦村|^宇多野|^下鳥羽|^上鳥羽|^水海道|^五個荘|^松ケ崎|^岩船郡|^都祁|^.+?[堂寺院](ノ前|門前)?|^.+?(島|温泉|寺|院)|^[東西南北]?[０-９一二三四五六七八九十廿]+(?:条通り|番町|条町|日市|ノ宮|条|番|区)/
+REG_NUMBER_FT = /[東西南北]$|(「)?(第)?[０-９].+$|[東西南北]?[０-９一二三四五六七八九十廿～]+(条通り|番町|条町|日市|ノ宮|条|線|番|区)$/
+REG_NUMBER_HD = /^.+?[堂寺院](ノ前|門前)?|^[東西南北]?[０-９一二三四五六七八九十廿～]+(条通り|番町|条町|日市(場町|町中地)?|ノ宮|条|線|区)/
 def label_set(list, name, label)
-  if name[/#{label}.#{label}$/]
+  prefecture = list[0]
+  chk = PAST_DIC[prefecture]['dic']
+  DIC[prefecture] ||= {'dic' => chk, 'cut' => PAST_DIC[prefecture]['cut']}
+  dic =      DIC[prefecture]['dic']
+  cut =      DIC[prefecture]['cut']
+
+  if /^(ノ[上]|ノ[^ァ-ヶ]+町|ノ坪|町区|地区|[都府県市郡区村町])$/ === label
+    list.pop
+    head = list[-1]
+    list[-1] = label = head + label
+    dic.push label unless dic.member? label
+  end
+
+  # check.
+  if /^(市市|区区|町町|村村|郡郡|都都|道道|府府|県県)$/ === label
+    puts ["d...", list].join(" ")
+  end
+
+  if /#{label}.#{label}$/ === name
     LABELS[name] = label
     unit = nil
   else
@@ -127,28 +153,19 @@ def label_set(list, name, label)
   }
 
   return if unit == label
-  return unless unit
+
   label.tr!("()（）","")
-  unit.tr!("()（）","")
-  prefecture = list[0]
 
-  if /甲子園/ === name
-    puts list.join(" ")
-  end
-  if 2 < list.size && /([都府県市郡区村町]$)/ === list[-2] && /(^[都府県市郡区村町])/ === list[-1]
-    puts list.join(" ")
+  if unit
+    unit.tr!("()（）","")
+    DIC[prefecture][unit] ||= []
+    DIC[prefecture][unit].push label
   end
 
-  chk = PAST_DIC[prefecture]['dic']
-  DIC[prefecture] ||= {'dic' => chk, 'cut' => PAST_DIC[prefecture]['cut']}
-  DIC[prefecture][unit] ||= []
-  DIC[prefecture][unit].push label
-  dic =      DIC[prefecture]['dic']
-  cut =      DIC[prefecture]['cut']
-
+  return unless unit
   return if PAST_DIC[label]
   unless dic.member? label
-    if /島$|[都道府県島市郡区村町寺院].+/ === label
+    if /[都道府県島市郡区村町寺院].+/ === label
       dic.push label
     end
   end
@@ -156,11 +173,15 @@ def label_set(list, name, label)
   if REG_NUMBER_FT === label
     head = label.sub(REG_NUMBER_FT,"")
     foot = label[REG_NUMBER_FT]
-    case head.size
-    when 0, 1
+    is_nocut = ( 0 == head.size ||  0 == foot.size ||
+                 1 == head.size                    ||
+                       !(/^(東|西|南|北)$/ === foot) ||
+                            /^ノ[^ァ-ヶ]/ === foot
+    )
+    if is_nocut
       dic.push label unless dic.member? label
     else
-      puts [prefecture, chk.member?(head), dic.member?(head), "2...", head, foot, "  ", list].join(" ")
+      puts [prefecture, "2...", head, foot, "  ", list].join(" ")
       cut.push head unless cut.member? head
       dic.push head unless dic.member? head
     end
@@ -168,11 +189,15 @@ def label_set(list, name, label)
   if REG_NUMBER_HD === label
     foot = label.sub(REG_NUMBER_HD,"")
     head = label[REG_NUMBER_HD]
-    case foot.size
-    when 0, 1
+    is_nocut = ( 0 == head.size ||  0 == foot.size ||
+                 1 == head.size                    ||
+                       !(/^(東|西|南|北)$/ === foot) ||
+                            /^ノ[^ァ-ヶ]/ === foot
+    )
+    if is_nocut
       dic.push label unless dic.member? label
     else
-      puts [prefecture, chk.member?(head), dic.member?(head), "4...", head, foot, "  ", list].join(" ")
+      puts [prefecture, "4...", head, foot, "  ", list].join(" ")
       cut.push head unless cut.member? head
       dic.push head unless dic.member? head
     end
@@ -209,24 +234,20 @@ end
 
 # katakana to hiragana for utf-8
 def to_hiragana(src)
-  src.codepoints.collect do |cp|
-    if ( 0x30a1 .. 0x30f6 ) === cp
-      (cp - 0x60).chr("UTF-8")
-    else
-      cp.chr("UTF-8")
-    end
-  end.join("")
+  src.tr("ァ-ヶヽヾヿ","ぁ-ゖゝゞゟ")
+  .gsub("ヷ","わ゙")
+  .gsub("ヸ","い゙")
+  .gsub("ヹ","え゙")
+  .gsub("ヺ","を゙")
 end
 
 # hiragana to katakana for utf-8
 def to_katakana(src)
-  src.codepoints.collect do |cp|
-    if ( 0x3041 .. 0x3096 ) === cp
-      (cp + 0x60).chr("UTF-8")
-    else
-      cp.chr("UTF-8")
-    end
-  end.join("")
+  src.tr("ぁ-ゖゝゞゟ","ァ-ヶヽヾヿ")
+  .gsub("わ゙","ヷ")
+  .gsub("い゙","ヸ")
+  .gsub("え゙","ヹ")
+  .gsub("を゙","ヺ")
 end
 
 
@@ -276,7 +297,7 @@ Zip::File.open(FNAME_ZIPCODE_ZIP) do |zip|
   end
 end
 
-p "...ZIPCODE scan"
+puts "...ZIPCODE scan"
 open(FNAME_ZIPCODE) do |f|
   f.read.encode("UTF-8","Shift_JIS").split("\n").each do |line|
     (jiscode, zipcode5, zipcode, ruby1, ruby2, ruby3, prefecture, city, town, is_duplicate_town, is_duplicate_won, has_town_code, has_multi_won, is_news, change_code ) = line.split(/"?,"?/)
@@ -327,14 +348,23 @@ open(FNAME_ZIPCODE) do |f|
   end
 end
 
-p "...ZIPCODE structure"
+puts "...ZIPCODE structure"
 POSTS_JIS_ZIP.each do |code, data|
   (zipcode, jiscode, prefecture, city, town, etc, ruby1, ruby2, ruby3, ruby4) = data
   puts ORM_CODE[jiscode + zipcode] if ORM_CODE[jiscode + zipcode]
 
   dic = PAST_DIC[prefecture]['dic'].map{|s| s + '|'}.join("")
-  gap = "寺門前|院門前|村|町|市|島|郡|区|）"
+  gap = "村|町|市|郡|区|）"
   towns = town.split(/(#{dic}.+?(?:区|町|村))/)
+  town_tail = towns.pop
+  if town_tail
+    town_tail_split = town_tail.split(/([東西南北]$)/) 
+    if town_tail_split
+      towns.push *town_tail_split
+    else
+      towns.push town_tail
+    end
+  end
   cities = city.split(/(#{dic}.+?(?:#{gap})(?!#{gap}))/)
 
   name = name_set(
@@ -383,10 +413,11 @@ POSTS_JIS_ZIP.each do |code, data|
   end
 end
 
-p "...GEOCODE scan"
+puts "...GEOCODE scan"
 open(FNAME_GEOCODE) do |f|
   f.read.encode("UTF-8","UTF-8").split("\n").each do |line|
     ( jiscode, label, ruby, building, zipcode, address, tel, source, lat, lon, note ) = line.split("\t")
+    address.tr!("0-9","０-９")
     next if 'jiscode' == jiscode
     lat = lat.to_f
     lon = lon.to_f
@@ -396,8 +427,17 @@ open(FNAME_GEOCODE) do |f|
     if post
       (_zipcode, _jiscode, prefecture, city, town, etc, ruby1, ruby2, ruby3, ruby4) = post
       dic = PAST_DIC[prefecture]['dic'].map{|s| s + '|'}.join("")
-      gap = "寺門前|院門前|村|町|市|島|郡|区|）"
+      gap = "村|町|市|郡|区|）"
       towns = town.split(/(#{dic}.+?(?:区|町|村))/)
+      town_tail = towns.pop
+      if town_tail
+        town_tail_split = town_tail.split(/([東西南北]$)/) 
+        if town_tail_split
+          towns.push *town_tail_split
+        else
+          towns.push town_tail
+        end
+      end
       cities = city.split(/(#{dic}.+?(?:#{gap})(?!#{gap}))/)
       name = name_set(
         NAME_GEOS,
@@ -487,10 +527,6 @@ File.open(FNAME_OUTPUT_YAML,"w") do |f|
 end
 
 DIC.each do |key, dic|
-  if 0 < dic['cut'].size
-    r = /^(#{dic['cut'].join("|")})../
-    dic['dic'].reject! {|s| r === s }
-  end
   dic.each do |k, d|
     dic[k] =  d.sort_by {|o| [- o.size, o] }.uniq
   end
