@@ -251,7 +251,8 @@ end
 
 # katakana to hiragana for utf-8
 def to_hiragana(src)
-  src.tr("ァ-ヶヽヾヿ","ぁ-ゖゝゞゟ")
+  src
+  .tr("ァ-ヶヽヾヿ","ぁ-ゖゝゞゟ")
   .gsub("ヷ","わ゙")
   .gsub("ヸ","い゙")
   .gsub("ヹ","え゙")
@@ -260,11 +261,12 @@ end
 
 # hiragana to katakana for utf-8
 def to_katakana(src)
-  src.tr("ぁ-ゖゝゞゟ","ァ-ヶヽヾヿ")
+  src
   .gsub("わ゙","ヷ")
   .gsub("い゙","ヸ")
   .gsub("え゙","ヹ")
   .gsub("を゙","ヺ")
+  .tr("ぁ-ゖゝゞゟ","ァ-ヶヽヾヿ")
 end
 
 

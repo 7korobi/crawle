@@ -162,6 +162,15 @@ $CODES = {
   'yuml'   => 'ÿ', #	00FF	0255	&yuml;	小文字 y（ウムラウト付）
 }
 
+# hiragana to katakana for utf-8
+def to_katakana(src)
+  src
+  .gsub("わ゙","ヷ")
+  .gsub("い゙","ヸ")
+  .gsub("え゙","ヹ")
+  .gsub("を゙","ヺ")
+  .tr("ぁ-ゖゝゞゟ","ァ-ヶヽヾヿ")
+end
 
 def decodeHTML(text)
   text
@@ -199,9 +208,9 @@ def scan_names( leaf_key, key, mark )
     IS_DONE[leaf_key] = f.last_modified
 
     body = decodeHTML( f.read.encode("UTF-8", "UTF-8") ).scan %r|<TR>\s*<TD>(@*)<B>(<FONT color="#ff00..">)?(.+?)</B>(@*)</TD>\s*<TD>([^<]+)</TD>\s*<TD>(\d+)</TD>\s*<TD>([^<]+)</TD>\s*</TR>|m
-    body.each do |(x1, col, name, x2, spell, count, mark2)|
+    body.each do |(x1, col, spell, x2, names, count, mark2)|
       if "" != x1 || "" != x2
-        p x1, x2, name, spell, count, mark, mark2
+        p x1, x2, spell, names, count, mark, mark2
         next
       end
       if col
@@ -210,20 +219,23 @@ def scan_names( leaf_key, key, mark )
         comment = "#{count}%住 #{mark2}"
       end
       count = count.to_i
-      yml = YAML.dump([{
-        "spell" => spell,
-        "name" => name,
-        "side" => "姓",
-        "mark" => mark,
-        "comment" => comment,
-        "key" => key,
-      }])
-      File.open(OUTPUT, "a") do |f|
-        f.write yml[4..]
+      names.split("　").reject {|s| [nil, ""].member? s }.each do |name|
+        yml = YAML.dump([{
+          "spell" => spell,
+          "name" => to_katakana(name),
+          "side" => "姓",
+          "mark" => mark,
+          "comment" => comment,
+          "key" => key,
+        }])
+        File.open(OUTPUT, "a") do |f|
+          f.write yml[4..]
+        end
       end
     end
   end
 end
+
 
 File.open(OUTPUT,"w") do |f|
   YAML.dump({

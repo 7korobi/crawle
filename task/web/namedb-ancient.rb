@@ -179,9 +179,12 @@ def scan_names( leaf_key, key, mark )
     bodys = f.read.encode("UTF-8", "UTF-8").scan %r|<td valign="top">\s+<p>(.+?)</p>\s+</td>|m
     bodys.each_with_index do |body, idx|
       body = decodeHTML body[0]
-      body = body.split(%r| *<br /> *\n*|).map {|s| s.strip.split(/[ \(\)（）]+/) }
+      body = body.split(%r| *<br /> *\n*|).map do |s|
+        s.strip.split(/<span class=".+">|<\/span>|[ \(\)（）]+/).reject {|s| [nil, ""].member? s }
+      end
       last_comment = []
       body.each do |(name, spell, *comment)|
+        p [name, spell, *comment] if spell == "<span"
         if " >" == name
           name  = spell
           spell = comment[0]
