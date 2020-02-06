@@ -2,7 +2,7 @@
 # set RUBYOPT=-EUTF-8
 
 require "open3"
-require "./lib/media"
+require "./task/HandBrake/lib/media"
 
 class Packer
   AUDIO = ".{wma,flac}"

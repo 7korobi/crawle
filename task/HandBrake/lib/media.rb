@@ -1,14 +1,14 @@
 # -*- encoding: utf-8 -*-
 # set RUBYOPT=-EUTF-8
 
-require "./lib/media/base"
-require "./lib/media/copy"
-require "./lib/media/handbrake"
+require "./task/HandBrake/lib/media/base"
+require "./task/HandBrake/lib/media/copy"
+require "./task/HandBrake/lib/media/handbrake"
 
-require "./lib/media/bdmv"
-require "./lib/media/album"
-require "./lib/media/movie"
-require "./lib/media/hevc"
+require "./task/HandBrake/lib/media/bdmv"
+require "./task/HandBrake/lib/media/album"
+require "./task/HandBrake/lib/media/movie"
+require "./task/HandBrake/lib/media/hevc"
 
 
 STAMP = Time.now.strftime("%Y-%m-%d.%H")

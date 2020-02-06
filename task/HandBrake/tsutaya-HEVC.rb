@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 # set RUBYOPT=-EUTF-8
 
-require "./lib/packer"
+require "./task/HandBrake/lib/packer"
 ENV.win
 
 class Media::Base

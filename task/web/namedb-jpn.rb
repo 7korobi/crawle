@@ -25,7 +25,7 @@ COUNTRYS = [
   ["CHN", "nagano.htm", "長野"],
   ["CHN", "yamanashi.htm", "山梨"],
   ["CHN", "shizuoka.htm", "静岡"],
-  ["CHN", "aichi.htm", "愛知"], # 2020/01/06  404 not found.
+#  ["CHN", "aichi.htm", "愛知"], # 2020/01/06  404 not found.
   ["CHN", "gifu.htm", "岐阜"],
   ["CHN", "mie.htm", "三重"],
   ["CHN", "toyama.htm", "富山"],
