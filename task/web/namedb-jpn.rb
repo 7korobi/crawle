@@ -2,7 +2,7 @@ require 'open-uri'
 require 'yaml'
 
 
-OUTPUT = "../giji-fire-new/yaml/work_namedb_jpn.yml"
+OUTPUT = "../giji-fire-new/app/yaml/work_namedb_jpn.yml"
 IS_DONE = {}
 
 URL_HEAD = "http://myoujijiten.web.fc2.com/"
@@ -25,7 +25,7 @@ COUNTRYS = [
   ["CHN", "nagano.htm", "長野"],
   ["CHN", "yamanashi.htm", "山梨"],
   ["CHN", "shizuoka.htm", "静岡"],
-  ["CHN", "aichi.htm", "愛知"],
+  ["CHN", "aichi.htm", "愛知"], # 2020/01/06  404 not found.
   ["CHN", "gifu.htm", "岐阜"],
   ["CHN", "mie.htm", "三重"],
   ["CHN", "toyama.htm", "富山"],
@@ -202,8 +202,8 @@ def decodeHTML(text)
   end
 end
 
-def scan_names( leaf_key, key, mark )
-  open( URL_HEAD + leaf_key ) do |f|
+def scan_names( key, leaf_key, mark )
+  URI.open( URL_HEAD + leaf_key ) do |f|
     p f.base_uri
     IS_DONE[leaf_key] = f.last_modified
 
@@ -245,7 +245,7 @@ File.open(OUTPUT,"w") do |f|
 end
 
 COUNTRYS.each do |(key, leaf_key, mark)|
-  scan_names( leaf_key, key, mark )
+  scan_names( key, leaf_key, mark )
 end
 
 yml = YAML.dump({

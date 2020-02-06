@@ -3,7 +3,7 @@ require 'yaml'
 
 URL_HEAD = "http://newcomer.s206.xrea.com/names/alphaNat/"
 
-OUTPUT = "../giji-fire-new/yaml/work_namedb.yml"
+OUTPUT = "../giji-fire-new/app/yaml/work_namedb.yml"
 IS_DONE = {}
 
 CODES = {
@@ -134,7 +134,7 @@ def decodeHTML(text)
 end
 
 def scan_names( leaf_key, key )
-  open( URL_HEAD + leaf_key ) do |f|
+  URI.open( URL_HEAD + leaf_key ) do |f|
     body = f.read.encode("UTF-8", "Shift_JIS").scan %r|<pre>(.+)</pre>|m
     p f.base_uri
     IS_DONE[leaf_key] = f.last_modified
@@ -167,7 +167,7 @@ def scan_names( leaf_key, key )
   end
 end
 
-open( URL_HEAD + "alnatix.htm") do |f|
+URI.open( URL_HEAD + "alnatix.htm") do |f|
   country_list = f.read.encode("UTF-8", "Shift_JIS").scan %r|<a href=([^.]+\.htm) target=DATA>([^<]+)</a><br>|
   countries = country_list.each_with_object({}) do |(key, country), h|
     h[key] =

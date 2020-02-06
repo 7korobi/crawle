@@ -2,7 +2,7 @@ require 'open-uri'
 require 'yaml'
 
 
-OUTPUT = "../giji-fire-new/yaml/work_namedb_ancient.yml"
+OUTPUT = "../giji-fire-new/app/yaml/work_namedb_ancient.yml"
 IS_DONE = {}
 
 URL_HEAD = "http://www.efendi.jp/rq/script/languages/ancient/names/"
@@ -172,7 +172,7 @@ def decodeHTML(text)
 end
 
 def scan_names( leaf_key, key, mark )
-  open( URL_HEAD + leaf_key ) do |f|
+  URI.open( URL_HEAD + leaf_key ) do |f|
     p f.base_uri
     IS_DONE[leaf_key] = f.last_modified
 

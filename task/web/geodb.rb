@@ -301,7 +301,7 @@ Zip::File.open(FNAME_GEOCODE_ZIP) do |zip|
 end
 
 
-open('https://www.post.japanpost.jp/zipcode/dl/oogaki/zip/ken_all.zip') do |fr|
+URI.open('https://www.post.japanpost.jp/zipcode/dl/oogaki/zip/ken_all.zip') do |fr|
   File.open(FNAME_ZIPCODE_ZIP,'w') do |fw|
     fw.write fr.read
   end
@@ -317,7 +317,7 @@ Zip::File.open(FNAME_ZIPCODE_ZIP) do |zip|
 end
 
 puts "...ZIPCODE scan"
-open(FNAME_ZIPCODE) do |f|
+URI.open(FNAME_ZIPCODE) do |f|
   f.read.encode("UTF-8","Shift_JIS").split("\n").each do |line|
     (jiscode, zipcode5, zipcode, ruby1, ruby2, ruby3, prefecture, city, town, is_duplicate_town, is_duplicate_won, has_town_code, has_multi_won, is_news, change_code ) = line.split(/"?,"?/)
     jiszipcode = jiscode + zipcode
@@ -433,7 +433,7 @@ POSTS_JIS_ZIP.each do |code, data|
 end
 
 puts "...GEOCODE scan"
-open(FNAME_GEOCODE) do |f|
+URI.open(FNAME_GEOCODE) do |f|
   f.read.encode("UTF-8","UTF-8").split("\n").each do |line|
     ( jiscode, label, ruby, building, zipcode, address, tel, source, lat, lon, note ) = line.split("\t")
     address.tr!("0-9","０-９")
