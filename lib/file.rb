@@ -66,6 +66,14 @@ def rmtree(tgt)
   BAT.puts "rem rd /s /Q #{win tgt}"
 end
 
+def rm(tgts)
+  tgts.each do |tgt|
+    FileUtils.rm(tgt)
+    SH.puts "# rm -f #{ tgt }"
+    BAT.puts "rem del /s /Q #{win tgt}"
+  end
+end
+
 def mkpath(tgt)
   FileUtils.mkpath(tgt)
   SH.puts "# mkdir -p #{ tgt }"
