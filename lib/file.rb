@@ -3,6 +3,10 @@ require 'fileutils'
 DST = '/mnt/c/Dropbox'
 SRC = '/mnt/c/Documents'
 
+CMD_PATH = File.expand_path $0
+BAT = open("#{CMD_PATH}.bat", "wb")
+SH = open("#{CMD_PATH}.sh", "w")
+
 BAT.puts "rem  created at #{Time.now}"
 SH.puts "# created at #{Time.now}"
 
