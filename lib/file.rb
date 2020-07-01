@@ -23,15 +23,11 @@ def crawle(tail, paths)
     Dir.glob("#{SRC}/#{rule}/#{tail}").each do |src|
       dest = src.gsub /^#{SRC}/, DST
       list.push [dest, src]
-      clean dest
-      clean src
     end
 
     Dir.glob("#{DST}/#{rule}/#{tail}").each do |dest|
       src = dest.gsub /^#{DST}/, SRC
       list.push [dest, src]
-      clean dest
-      clean src
     end
   end
 
@@ -89,8 +85,4 @@ def symlink(src, dest)
   # FileUtils.symlink(src, dest)
   SH.puts "ln -s #{src} #{dest}"
   BAT.puts "mklink /D #{win dest} #{win src}"
-end
-
-def clean(path)
-  Dir.glob("#{path} \(*").each(&:rmtree)
 end
