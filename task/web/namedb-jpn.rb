@@ -1,3 +1,4 @@
+require 'nokogiri'
 require 'open-uri'
 require 'yaml'
 
@@ -25,7 +26,7 @@ COUNTRYS = [
   ["CHN", "nagano.htm", "長野"],
   ["CHN", "yamanashi.htm", "山梨"],
   ["CHN", "shizuoka.htm", "静岡"],
-#  ["CHN", "aichi.htm", "愛知"], # 2020/01/06  404 not found.
+  ["CHN", "aichi.htm", "愛知"],
   ["CHN", "gifu.htm", "岐阜"],
   ["CHN", "mie.htm", "三重"],
   ["CHN", "toyama.htm", "富山"],
@@ -207,19 +208,21 @@ def scan_names( key, leaf_key, mark )
     p f.base_uri
     IS_DONE[leaf_key] = f.last_modified
 
-    body = decodeHTML( f.read.encode("UTF-8", "UTF-8") ).scan %r|<TR>\s*<TD>(@*)<B>(<FONT color="#ff00..">)?(.+?)</B>(@*)</TD>\s*<TD>([^<]+)</TD>\s*<TD>(\d+)</TD>\s*<TD>([^<]+)</TD>\s*</TR>|m
-    body.each do |(x1, col, spell, x2, names, count, mark2)|
-      if "" != x1 || "" != x2
-        p x1, x2, spell, names, count, mark, mark2
-        next
-      end
-      if col
-        comment = "#{count}%住 多 #{mark2}"
+    doc = Nokogiri::HTML.parse( decodeHTML( f.read.encode("UTF-8", "UTF-8") ), nil, 'UTF-8' )
+    table = doc.css('table[border]')[0]
+    table.css('tr').each do |tr|
+      (spellTag,namesTag,countTag,spotTag) = tr.css('td')
+      next unless spotTag
+      spell = spellTag.text
+      count = countTag.text.to_i
+      names = namesTag.text.split("　").reject {|s| [nil, ""].member? s }
+      spot = spotTag.text
+      if spellTag.css('font[color]')[0]
+        comment = "#{count}%住 多 #{spot}"
       else
-        comment = "#{count}%住 #{mark2}"
+        comment = "#{count}%住 #{spot}"
       end
-      count = count.to_i
-      names.split("　").reject {|s| [nil, ""].member? s }.each do |name|
+      names.each do |name|
         yml = YAML.dump([{
           "spell" => spell,
           "name" => to_katakana(name),
