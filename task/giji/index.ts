@@ -41,6 +41,7 @@ export interface ChrTagYml {
     chr_set_id: string;
     face_sort:  FaceSort[];
     order:      number;
+    _id:        string;
     head?:      Head;
 }
 
@@ -105,56 +106,77 @@ export enum StoryType {
 export interface Card {
     discard: Array<number | string>;
     event:   string[];
-    config:  ConfigElement[];
+    config:  USERIDADMINElement[];
 }
 
-export enum ConfigElement {
+export enum USERIDADMINElement {
+    Admin = "admin",
     Alchemist = "alchemist",
+    Alive = "alive",
     Aprilfool = "aprilfool",
     Aura = "aura",
     Aurawolf = "aurawolf",
     Bat = "bat",
+    Bind = "bind",
     Bitch = "bitch",
     Childwolf = "childwolf",
     Clamor = "clamor",
     Cointoss = "cointoss",
     Cpossess = "cpossess",
     Curse = "curse",
+    Cursed = "cursed",
     Cursewolf = "cursewolf",
     Cwolf = "cwolf",
     Decide = "decide",
     Dipsy = "dipsy",
     Dish = "dish",
     Doctor = "doctor",
+    Droop = "droop",
     Dying = "dying",
     Dyingpixi = "dyingpixi",
+    Dyingpossess = "dyingpossess",
     Dyingwolf = "dyingwolf",
     Eclipse = "eclipse",
     Elder = "elder",
+    Entry = "entry",
+    Epilogue = "epilogue",
+    Escape = "escape",
+    Executed = "executed",
     Fairy = "fairy",
     Fan = "fan",
     Fanatic = "fanatic",
+    Feared = "feared",
     Fink = "fink",
     Fire = "fire",
     Fm = "fm",
     Follow = "follow",
     Force = "force",
+    Gamemaster = "gamemaster",
     Ghost = "ghost",
     Girl = "girl",
     Glass = "glass",
+    Grave = "grave",
     Guard = "guard",
     Guru = "guru",
     Hamster = "hamster",
+    Hate = "hate",
     Hatedevil = "hatedevil",
     Headless = "headless",
+    Hide = "hide",
     Hunter = "hunter",
     Intwolf = "intwolf",
     Invalid = "invalid",
     Jammer = "jammer",
+    Juror = "juror",
+    Leave = "leave",
+    Live = "live",
     Lonewolf = "lonewolf",
     Lost = "lost",
+    Love = "love",
     Loveangel = "loveangel",
     Lover = "lover",
+    Main = "main",
+    Master = "master",
     Medium = "medium",
     Mediumrole = "mediumrole",
     Mediumwin = "mediumwin",
@@ -165,12 +187,15 @@ export enum ConfigElement {
     Muppeting = "muppeting",
     Necromancer = "necromancer",
     Nightmare = "nightmare",
+    None = "none",
     Nothing = "nothing",
     Ogre = "ogre",
     Oracle = "oracle",
+    Oura = "oura",
     Passion = "passion",
     Possess = "possess",
     Prince = "prince",
+    Prologue = "prologue",
     Prophecy = "prophecy",
     Rightwolf = "rightwolf",
     Robber = "robber",
@@ -185,13 +210,18 @@ export enum ConfigElement {
     Silentwolf = "silentwolf",
     Snatch = "snatch",
     Sorcerer = "sorcerer",
+    Start = "start",
     Stigma = "stigma",
+    Suddendead = "suddendead",
+    Suicide = "suicide",
     Sympathy = "sympathy",
     Tangle = "tangle",
     Trickster = "trickster",
     Turnfairy = "turnfairy",
     Turnfink = "turnfink",
+    Victim = "victim",
     Villager = "villager",
+    Visiter = "visiter",
     Walpurgis = "walpurgis",
     Werebat = "werebat",
     Weredog = "weredog",
@@ -208,6 +238,7 @@ export enum Folder {
     Ciel = "CIEL",
     Crazy = "CRAZY",
     Lobby = "LOBBY",
+    LobbyOld = "LOBBY_OLD",
     Morphe = "MORPHE",
     Offparty = "OFFPARTY",
     Pan = "PAN",
@@ -218,6 +249,7 @@ export enum Folder {
     Soybean = "SOYBEAN",
     Test = "TEST",
     Ultimate = "ULTIMATE",
+    Union = "UNION",
     Wolf = "WOLF",
     Xebec = "XEBEC",
 }
@@ -243,7 +275,7 @@ export interface TypeClass {
     say:       SayElement;
     vote:      Vote;
     roletable: Roletable;
-    mob:       Mob | null;
+    mob:       USERIDADMINElement | null;
     game:      Game | null;
 }
 
@@ -255,14 +287,6 @@ export enum Game {
     Secret = "SECRET",
     Tabula = "TABULA",
     Trouble = "TROUBLE",
-}
-
-export enum Mob {
-    Alive = "alive",
-    Gamemaster = "gamemaster",
-    Grave = "grave",
-    Juror = "juror",
-    Visiter = "visiter",
 }
 
 export enum Roletable {
@@ -283,7 +307,9 @@ export enum Roletable {
 export enum SayElement {
     Euro = "euro",
     Infinity = "infinity",
+    InfinityBraid = "infinity_braid",
     Juna = "juna",
+    JunaBraid = "juna_braid",
     Lobby = "lobby",
     Saving = "saving",
     Say1 = "say1",
@@ -293,8 +319,10 @@ export enum SayElement {
     Sow = "sow",
     Tiny = "tiny",
     Vulcan = "vulcan",
+    VulcanBraid = "vulcan_braid",
     Wbbs = "wbbs",
     Weak = "weak",
+    WeakBraid = "weak_braid",
 }
 
 export enum Vote {
@@ -467,220 +495,35 @@ export interface List {
 }
 
 export interface SetAblesYml {
-    editvilform:       Editvilform;
-    muster:            Editvilform;
-    update:            Editvilform;
-    scrapvil:          Editvilform;
-    exit:              Editvilform;
-    commit:            Commit;
-    night:             Cling;
-    dish:              Cling;
-    cling:             Cling;
-    guru:              Bitch;
-    bitch:             Bitch;
-    bonds:             Bitch;
-    bond:              Bitch;
-    guard:             Bitch;
-    see:               Bitch;
-    sneak:             Analeptic;
-    hunt:              Analeptic;
-    kill:              Analeptic;
-    cure:              Analeptic;
-    tangle:            Analeptic;
-    analeptic:         Analeptic;
-    poison:            Analeptic;
-    scapegoat:         Analeptic;
-    hike:              Bitch;
-    vote:              Analeptic;
-    vote_role:         Analeptic;
-    entrust:           Commit;
-    jammer:            Analeptic;
-    snatch:            Analeptic;
-    gm_droop:          Analeptic;
-    gm_live:           Analeptic;
-    gm_disable_vote:   Analeptic;
-    gm_enable_vote:    Analeptic;
-    maker:             Analeptic;
-    kick:              Analeptic;
-    blind:             Blind;
-    wolf:              Armor;
-    pixi:              Armor;
-    human:             Armor;
-    evil:              Armor;
-    circular:          Armor;
-    friend:            Armor;
-    once:              Armor;
-    hate:              Armor;
-    love:              Armor;
-    droop:             Armor;
-    curse:             Armor;
-    aura:              Armor;
-    rob:               Armor;
-    grave:             Armor;
-    armor:             Armor;
-    medium:            Armor;
-    spy_role:          Armor;
-    spy_win:           Armor;
-    spy_aura:          Armor;
-    spy_wolf:          Armor;
-    stigma:            Armor;
-    fm:                Armor;
-    fanatic:           Armor;
-    tafness:           Armor;
-    hurt:              SetWinnerYml;
-    sheep:             Sheep;
-    infected:          SetWinnerYml;
-    hide_for_vote:     SetWinnerYml;
-    hide_for_role:     SetWinnerYml;
-    hide_for_gift:     SetWinnerYml;
-    disable_vote:      SetWinnerYml;
-    disable_special:   SetWinnerYml;
-    disable_gift:      SetWinnerYml;
-    disable_role:      SetWinnerYml;
-    disable_poison:    SetWinnerYml;
-    disable_analeptic: SetWinnerYml;
-    twolife:           Armor;
-    august:            Armor;
-    revenge:           Armor;
-    seal:              Armor;
-    grudge:            Armor;
-    riot:              Armor;
-    wolfify:           Armor;
-    chkGSAY:           Armor;
-    ENTRY:             ADMINClass;
-    MAKER:             ADMINClass;
-    ADMIN:             ADMINClass;
-    PSAY:              ADMINClass;
-    WSAY:              ADMINClass;
-    XSAY:              ADMINClass;
-    GSAY:              ADMINClass;
-    MSAY:              ADMINClass;
-    AIM:               ADMINClass;
-    TSAY:              ADMINClass;
-    SSAY:              ADMINClass;
-    VSAY:              ADMINClass;
-    VGSAY:             ADMINClass;
+    group?:   Group;
+    at?:      string;
+    cmd?:     string;
+    btn?:     string;
+    change?:  string;
+    help:     null | string;
+    _id:      string;
+    sw?:      string;
+    pass?:    string;
+    for?:     string;
+    targets?: string;
+    target?:  string;
+    require?: string;
+    label?:   string;
+    hide?:    string[];
+    disable?: string[];
+    text?:    Text[];
 }
 
-export interface ADMINClass {
-    group?: string;
-    cmd:    ADMINCmd | null;
-    text?:  Text[];
-    label:  string;
-    help:   null | string;
-    for?:   string;
-}
-
-export enum ADMINCmd {
-    Entry = "entry",
-    Trap = "trap",
-    Write = "write",
+export enum Group {
+    Gm = "GM",
+    Potof = "POTOF",
+    Status = "STATUS",
 }
 
 export enum Text {
     Act = "act",
     Memo = "memo",
     Talk = "talk",
-}
-
-export interface Analeptic {
-    for:      string;
-    at:       At;
-    require?: string;
-    target:   string;
-    pass:     Pass;
-    change:   string;
-    help:     string;
-    group?:   string;
-    cmd?:     string;
-}
-
-export enum At {
-    All = "all",
-    Main = "main",
-    Progress = "progress",
-    Prologue = "prologue",
-}
-
-export enum Pass {
-    Empty = "―――",
-    パス = "（パス）",
-    委任する = "（委任する）",
-}
-
-export interface Armor {
-    help: string;
-}
-
-export interface Bitch {
-    for:      string;
-    at:       string;
-    targets?: string;
-    change:   string;
-    help:     string;
-    target?:  string;
-    pass?:    Pass;
-}
-
-export interface Blind {
-    label: string;
-    help:  string;
-}
-
-export interface Cling {
-    at:     At;
-    sw:     string;
-    pass:   string;
-    change: string;
-    help:   string;
-}
-
-export interface Commit {
-    group:   string;
-    at:      At;
-    cmd:     string;
-    sw?:     string;
-    pass:    string;
-    change:  string;
-    help:    string;
-    for?:    For;
-    target?: string;
-}
-
-export enum For {
-    Cursed = "cursed",
-    Droop = "droop",
-    Executed = "executed",
-    Feared = "feared",
-    Live = "live",
-    Mob = "mob",
-    Suddendead = "suddendead",
-    Suicide = "suicide",
-    Victim = "victim",
-}
-
-export interface SetWinnerYml {
-    group:        string;
-    disable?:     string[];
-    label:        string;
-    help?:        string;
-    hide?:        string[];
-    order?:       number;
-    label_human?: string;
-}
-
-export interface Editvilform {
-    group:  string;
-    at:     string;
-    cmd:    string;
-    btn:    string;
-    change: string;
-    help:   string;
-}
-
-export interface Sheep {
-    group: string;
-    help:  string;
 }
 
 export interface SetActionsYml {
@@ -691,23 +534,15 @@ export interface SetActionsYml {
 
 export interface SetEventsYml {
     label: string;
+    _id:   USERIDADMINElement;
 }
 
 export interface SetLocaleYml {
-    regend:  Regend;
-    village: Alien;
-    heavy:   Alien;
-    secret:  Alien;
-    complex: Alien;
-    orbit:   Alien;
-    alien:   Alien;
-}
-
-export interface Alien {
-    label:          string;
-    help:           string;
-    intro:          string[];
     sow_locale_id?: SowLocaleID;
+    label:          string;
+    _id:            string;
+    help?:          string;
+    intro?:         string[];
 }
 
 export enum SowLocaleID {
@@ -723,225 +558,50 @@ export enum SowLocaleID {
     Ultimate = "ultimate",
 }
 
-export interface Regend {
-    sow_locale_id: SowLocaleID;
-    label:         string;
-}
-
 export interface SetMarkYml {
-    age_A:         Age;
-    age_B:         Age;
-    age_C:         Age;
-    age_D:         Age;
-    age_Z:         Age;
-    age_trial:     Age;
-    age_education: Age;
-    age_reserve:   Age;
-    crude:         Appare;
-    crime:         Appare;
-    drug:          Appare;
-    drunk:         Appare;
-    fear:          Appare;
-    gamble:        Appare;
-    love:          Appare;
-    sexy:          Appare;
-    violence:      Appare;
-    biohazard:     Appare;
-    cat:           Appare;
-    music:         Appare;
-    appare:        Appare;
+    label?:  string;
+    path:    string;
+    _id:     string;
+    enable?: boolean;
 }
 
-export interface Age {
-    label: string;
-    path:  string;
+export interface SowRoletablesYml {
+    label:          string;
+    help?:          string;
+    _id:            string;
+    cmd?:           SetOptionYmlCmd | null;
+    disabled?:      boolean;
+    role_ids_list?: Array<USERIDADMINElement[] | null>;
 }
 
-export interface Appare {
-    enable: boolean;
-    path:   string;
-}
-
-export interface SetOptionYml {
-    "select-role":   Blind;
-    "random-target": Blind;
-    "seq-event":     Blind;
-    "show-id":       Blind;
-    entrust:         Blind;
-    "undead-talk":   Blind;
-    "aiming-talk":   Blind;
+export enum SetOptionYmlCmd {
+    Trap = "trap",
 }
 
 export interface SetRolesYml {
-    dyingpossess: Alchemist;
-    aurawolf:     Alchemist;
-    nothing:      Alchemist;
-    aprilfool:    Alchemist;
-    turnfink:     Alchemist;
-    turnfairy:    Alchemist;
-    eclipse:      Alchemist;
-    cointoss:     Alchemist;
-    force:        Alchemist;
-    miracle:      Alchemist;
-    prophecy:     Alchemist;
-    clamor:       Alchemist;
-    fire:         Alchemist;
-    nightmare:    Alchemist;
-    ghost:        Alchemist;
-    escape:       Alchemist;
-    seance:       Alchemist;
-    entry:        Alchemist;
-    start:        Alchemist;
-    main:         Alchemist;
-    prologue:     Alchemist;
-    epilogue:     Alchemist;
-    live:         Alchemist;
-    executed:     Alchemist;
-    victim:       Alchemist;
-    cursed:       Alchemist;
-    droop:        Alchemist;
-    suicide:      Alchemist;
-    feared:       Alchemist;
-    suddendead:   Alchemist;
-    leave:        Alchemist;
-    none:         Alchemist;
-    bind:         Alchemist;
-    hide:         Alchemist;
-    mob:          Alchemist;
-    visiter:      Alchemist;
-    grave:        Alchemist;
-    alive:        Alchemist;
-    juror:        Alchemist;
-    gamemaster:   Alchemist;
-    master:       Alchemist;
-    admin:        AdminClass;
-    lost:         Alchemist;
-    shield:       Alchemist;
-    glass:        Alchemist;
-    ogre:         Alchemist;
-    fairy:        Alchemist;
-    fink:         Alchemist;
-    decide:       Alchemist;
-    seeronce:     Alchemist;
-    dipsy:        Alchemist;
-    lover:        Alchemist;
-    robber:       Alchemist;
-    tangle:       Alchemist;
-    villager:     Alchemist;
-    stigma:       Alchemist;
-    fm:           Alchemist;
-    sympathy:     Alchemist;
-    seer:         Alchemist;
-    seerwin:      Alchemist;
-    aura:         Alchemist;
-    oura:         Alchemist;
-    seerrole:     Alchemist;
-    guard:        Alchemist;
-    medium:       Alchemist;
-    mediumwin:    Alchemist;
-    mediumrole:   Alchemist;
-    necromancer:  Alchemist;
-    follow:       Alchemist;
-    fan:          Alchemist;
-    hunter:       Alchemist;
-    weredog:      Alchemist;
-    prince:       Alchemist;
-    rightwolf:    Alchemist;
-    doctor:       Alchemist;
-    curse:        Alchemist;
-    dying:        Alchemist;
-    invalid:      Alchemist;
-    alchemist:    Alchemist;
-    witch:        Alchemist;
-    girl:         Alchemist;
-    scapegoat:    Alchemist;
-    elder:        Alchemist;
-    jammer:       Alchemist;
-    snatch:       Alchemist;
-    bat:          Alchemist;
-    possess:      Alchemist;
-    fanatic:      Alchemist;
-    muppeting:    Alchemist;
-    wisper:       Alchemist;
-    cpossess:     Alchemist;
-    semiwolf:     Alchemist;
-    oracle:       Alchemist;
-    sorcerer:     Alchemist;
-    walpurgis:    Alchemist;
-    headless:     Alchemist;
-    wolf:         Alchemist;
-    intwolf:      Alchemist;
-    cwolf:        Alchemist;
-    cursewolf:    Alchemist;
-    whitewolf:    Alchemist;
-    childwolf:    Alchemist;
-    dyingwolf:    Alchemist;
-    silentwolf:   Alchemist;
-    hamster:      Alchemist;
-    werebat:      Alchemist;
-    mimicry:      Alchemist;
-    dyingpixi:    Alchemist;
-    trickster:    Alchemist;
-    hatedevil:    Alchemist;
-    hate:         Alchemist;
-    love:         Alchemist;
-    loveangel:    Alchemist;
-    passion:      Alchemist;
-    lonewolf:     Alchemist;
-    guru:         Alchemist;
-    dish:         Alchemist;
-    bitch:        Alchemist;
-}
-
-export interface AdminClass {
-    label:    string;
-    win:      null;
-    group:    string;
-    able_ids: string[];
-}
-
-export interface Alchemist {
     label:    string;
     win:      null | string;
-    group?:   null | string;
     able_ids: string[];
-    cmd?:     AlchemistCmd;
     help?:    string;
+    _id:      USERIDADMINElement;
+    group?:   null | string;
     able?:    string;
+    cmd?:     SetRolesYmlCmd;
 }
 
-export enum AlchemistCmd {
+export enum SetRolesYmlCmd {
     Role = "role",
 }
 
 export interface SetSaysYml {
-    say5:           Euro;
-    wbbs:           Infinity;
-    euro:           Euro;
-    weak:           Euro;
-    juna:           Euro;
-    infinity:       Infinity;
-    sow:            InfinityBraid;
-    lobby:          InfinityBraid;
-    say1:           InfinityBraid;
-    say5x200:       InfinityBraid;
-    say5x300:       InfinityBraid;
-    saving:         InfinityBraid;
-    tiny:           InfinityBraid;
-    vulcan:         InfinityBraid;
-    weak_braid:     InfinityBraid;
-    juna_braid:     InfinityBraid;
-    vulcan_braid:   InfinityBraid;
-    infinity_braid: InfinityBraid;
-}
-
-export interface Euro {
-    label:    string;
-    help:     string;
-    count?:   { [key: string]: number };
-    max:      Max;
-    recovery: string;
-    all?:     { [key: string]: number };
+    label:     string;
+    help?:     string;
+    count?:    { [key: string]: number };
+    max?:      Max;
+    recovery?: string;
+    _id:       SayElement;
+    all?:      { [key: string]: number };
+    disabled?: boolean;
 }
 
 export interface Max {
@@ -950,91 +610,41 @@ export interface Max {
     line: number;
 }
 
-export interface Infinity {
-    label:  string;
-    help:   string;
-    max:    Max;
-    count?: { [key: string]: number };
-}
-
-export interface InfinityBraid {
-    label:    string;
-    disabled: boolean;
-}
-
-export interface SetTrapsYml {
-    blank:     Blind;
-    nothing:   ADMINClass;
-    aprilfool: ADMINClass;
-    turnfink:  ADMINClass;
-    turnfairy: ADMINClass;
-    eclipse:   ADMINClass;
-    cointoss:  ADMINClass;
-    force:     ADMINClass;
-    miracle:   ADMINClass;
-    prophecy:  ADMINClass;
-    clamor:    ADMINClass;
-    fire:      ADMINClass;
-    nightmare: Blind;
-    ghost:     ADMINClass;
-    escape:    ADMINClass;
-    seance:    ADMINClass;
+export interface SetWinnerYml {
+    label:        string;
+    group:        string;
+    order:        number;
+    help?:        string;
+    _id:          string;
+    label_human?: string;
 }
 
 export interface SowFolderYml {
-    PERL_DEFAULT: PERLDefault;
-    PERL_NEW:     PERLNew;
-    PERL_GAME:    PERLGame;
-    UNION:        PERLGame;
-    BRAID:        Braid;
-    all:          All;
-    TEST:         Test;
-    PERJURY_OLD:  Allstar;
-    PRETENSE:     Allstar;
-    RP:           Allstar;
-    CABALA_OLD:   Allstar;
-    ALLSTAR_OLD:  Allstar;
-    ULTIMATE:     Lobby;
-    WOLF:         Lobby;
-    PAN:          Allstar;
-    MORPHE:       Allstar;
-    SOYBEAN:      Allstar;
-    CIEL:         Allstar;
-    PERJURY:      Allstar;
-    XEBEC:        Allstar;
-    CRAZY:        Allstar;
-    CABALA:       Allstar;
-    ALLSTAR:      Allstar;
-    LOBBY_OLD:    LobbyOld;
-    LOBBY:        Lobby;
-    OFFPARTY:     Allstar;
-}
-
-export interface Allstar {
-    folder:    Folder;
-    nation:    string;
+    config?:   Config;
+    _id:       string;
+    story?:    SowFolderYmlStory;
+    nation?:   string;
+    folder?:   Folder;
     vid_code?: string;
-    server:    string;
-    oldlog:    string;
+    server?:   string;
+    oldlog?:   string;
     livelog?:  string;
-    info_url:  string;
-    epi_url:   string;
-    story?:    ALLSTARStory;
-    config?:   ALLSTARConfig;
+    info_url?: string;
+    epi_url?:  string;
 }
 
-export interface ALLSTARConfig {
-    csid:        string[];
-    erb:         Erb;
-    cd_default:  CDDefault;
-    maxsize:     Maxsize;
-    saycnt:      SayElement[];
-    game:        Game[];
-    trsid:       SowLocaleID[];
-    path:        Path;
-    cfg:         PurpleCFG;
-    enable:      Enable;
-    pl:          string;
+export interface Config {
+    csid?:       string[];
+    path?:       Path;
+    enable?:     Enable;
+    trsid?:      SowLocaleID[];
+    game?:       Game[];
+    erb?:        Erb;
+    cd_default?: CDDefault;
+    maxsize?:    Maxsize;
+    saycnt?:     SayElement[];
+    cfg?:        CFG;
+    pl?:         string;
     is_angular?: string;
 }
 
@@ -1043,23 +653,23 @@ export enum CDDefault {
     演 = "演",
 }
 
-export interface PurpleCFG {
-    TYPE:           Type;
-    RULE:           Folder;
-    USERID_NPC:     Userid;
-    USERID_ADMIN:   Userid;
-    ENABLED_VMAKE:  number;
-    TIMEOUT_ENTRY:  number;
-    TIMEOUT_SCRAP:  number;
-    TOPPAGE_INFO:   ToppageInfo;
-    BASEDIR_CGI:    BasedirCGI;
-    BASEDIR_DAT:    BasedirDAT;
-    BASEDIR_DOC:    string;
-    URL_SW:         string;
-    BASEDIR_CGIERR: string;
-    NAME_HOME:      string;
-    MAX_VILLAGES:   number;
-    MAX_LOG?:       number;
+export interface CFG {
+    TYPE:            Type;
+    RULE:            Folder;
+    USERID_NPC:      USERIDADMINElement;
+    USERID_ADMIN:    USERIDADMINElement;
+    ENABLED_VMAKE:   number;
+    TIMEOUT_ENTRY:   number;
+    TIMEOUT_SCRAP:   number;
+    TOPPAGE_INFO:    ToppageInfo;
+    BASEDIR_CGI:     BasedirCGI;
+    BASEDIR_DAT:     BasedirDAT;
+    BASEDIR_DOC:     string;
+    URL_SW?:         string;
+    BASEDIR_CGIERR?: string;
+    NAME_HOME?:      string;
+    MAX_VILLAGES?:   number;
+    MAX_LOG?:        number;
 }
 
 export enum BasedirCGI {
@@ -1079,11 +689,6 @@ export enum Type {
     Braid = "BRAID",
     Cabala = "CABALA",
     Cheat = "CHEAT",
-}
-
-export enum Userid {
-    Admin = "admin",
-    Master = "master",
 }
 
 export interface Enable {
@@ -1206,7 +811,7 @@ export enum DirVil {
     JksyDataVil = "../jksy/data/vil",
 }
 
-export interface ALLSTARStory {
+export interface SowFolderYmlStory {
     evil:      Evil;
     role_play: boolean;
 }
@@ -1214,135 +819,6 @@ export interface ALLSTARStory {
 export enum Evil {
     Evil = "EVIL",
     Wolf = "WOLF",
-}
-
-export interface Braid {
-    story:  ALLSTARStory;
-    config: BRAIDConfig;
-}
-
-export interface BRAIDConfig {
-    csid:       string[];
-    erb:        Erb;
-    cd_default: CDDefault;
-    maxsize:    Maxsize;
-    saycnt:     SayElement[];
-    game:       Game[];
-    trsid:      SowLocaleID[];
-    enable?:    Enable;
-    cfg?:       FluffyCFG;
-    path?:      Path;
-}
-
-export interface FluffyCFG {
-    TYPE:          Folder;
-    RULE:          string;
-    USERID_NPC:    Userid;
-    USERID_ADMIN:  Userid;
-    ENABLED_VMAKE: number;
-    TIMEOUT_ENTRY: number;
-    TIMEOUT_SCRAP: number;
-    TOPPAGE_INFO:  ToppageInfo;
-    BASEDIR_CGI:   BasedirCGI;
-    BASEDIR_DAT:   BasedirDAT;
-    BASEDIR_DOC:   string;
-}
-
-export interface Lobby {
-    folder:   Folder;
-    nation:   string;
-    vid_code: string;
-    server:   string;
-    oldlog:   string;
-    livelog?: string;
-    info_url: string;
-    epi_url:  string;
-    story:    ALLSTARStory;
-    config?:  ALLSTARConfig;
-}
-
-export interface LobbyOld {
-    folder:   string;
-    nation:   string;
-    vid_code: string;
-}
-
-export interface PERLDefault {
-    config: PERLDEFAULTConfig;
-}
-
-export interface PERLDEFAULTConfig {
-    csid:   string[];
-    path:   Path;
-    enable: Enable;
-}
-
-export interface PERLGame {
-    config: BRAIDConfig;
-}
-
-export interface PERLNew {
-    config: PERLNEWConfig;
-}
-
-export interface PERLNEWConfig {
-    trsid: SowLocaleID[];
-    game:  Game[];
-}
-
-export interface Test {
-    nation: string;
-    story:  ALLSTARStory;
-    config: ALLSTARConfig;
-}
-
-export interface All {
-    nation: string;
-}
-
-export interface SowGameYml {
-    TABULA:            Blind;
-    MILLERHOLLOW:      Blind;
-    LIVE_TABULA:       Blind;
-    LIVE_MILLERHOLLOW: Blind;
-    TROUBLE:           Blind;
-    MISTERY:           Blind;
-    VOV:               Vov;
-    SECRET:            Blind;
-    GAMEMASTER:        Blind;
-}
-
-export interface Vov {
-    disabled: boolean;
-    label:    string;
-    help:     string;
-}
-
-export interface SowRoletablesYml {
-    secret:   Hamster;
-    ultimate: Hamster;
-    lover:    Hamster;
-    hamster:  Hamster;
-    random:   Hamster;
-    custom:   Custom;
-    default:  Custom;
-    mistery:  Custom;
-    test1st:  Custom;
-    test2nd:  Custom;
-    wbbs_c:   Custom;
-    wbbs_f:   Custom;
-    wbbs_g:   Custom;
-}
-
-export interface Custom {
-    label:         string;
-    role_ids_list: Array<ConfigElement[] | null>;
-}
-
-export interface Hamster {
-    label:         string;
-    disabled:      boolean;
-    role_ids_list: any[];
 }
 
 export interface Villages {
@@ -1353,7 +829,7 @@ export interface Villages {
 }
 
 export interface Event {
-    _id:        IDEnum;
+    _id:        EventIDEnum;
     _type:      EventType;
     name?:      Name;
     story_id:   StoryID;
@@ -1365,13 +841,13 @@ export interface Event {
     epilogue?:  number;
     grudge?:    number;
     riot?:      number;
-    say?:       SayClass;
+    say?:       Say;
     scapegoat?: number;
     seance?:    string[];
     event?:     null;
 }
 
-export enum IDEnum {
+export enum EventIDEnum {
     Cabala2310 = "cabala-231-0",
     Cabala2311 = "cabala-231-1",
     Cabala2312 = "cabala-231-2",
@@ -1494,7 +970,7 @@ export enum Name {
     プロローグ = "プロローグ",
 }
 
-export interface SayClass {
+export interface Say {
     modifiedsay:   Date;
     modifiedwsay:  Date;
     modifiedgsay:  Date;
@@ -1531,7 +1007,7 @@ export enum Winner {
 export interface Message {
     _id:         string;
     story_id:    StoryID;
-    event_id:    IDEnum | null;
+    event_id:    EventIDEnum | null;
     logid:       string;
     sow_auth_id: string;
     date:        Date;
@@ -1910,22 +1386,22 @@ export interface Potof {
     face_id:     FaceID;
     history:     null | string;
     jobname:     null;
-    live:        For;
+    live:        USERIDADMINElement;
     name?:       string;
     overhear:    any[];
     pno?:        null;
     point:       Point;
     pseudobonds: string[];
-    role:        Array<ConfigElement | null>;
+    role:        Array<USERIDADMINElement | null>;
     rolestate?:  number | null;
     say:         { [key: string]: number | null };
-    select:      ConfigElement | number | null;
+    select:      USERIDADMINElement | number | null;
     sow_auth_id: string;
     story_id:    StoryID;
     timer:       PotofTimer;
     zapcount?:   number;
-    pseudolove?: Love | null;
-    love?:       Love | null;
+    pseudolove?: USERIDADMINElement | null;
+    love?:       USERIDADMINElement | null;
     commit?:     boolean;
     sheep?:      null | string;
 }
@@ -1951,10 +1427,6 @@ export enum EventID {
     Xebec2839 = "xebec-283-9",
     Xebec2957 = "xebec-295-7",
     Xebec3039 = "xebec-303-9",
-}
-
-export enum Love {
-    Love = "love",
 }
 
 export interface Point {

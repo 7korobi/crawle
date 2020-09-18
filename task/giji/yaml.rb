@@ -17,8 +17,16 @@ Dir.glob('../giji-next/src/yaml/*').each do |path|
   next if %r[/work_] === path
 
   data = YAML.load_file path
-  str = JSON.generate data
+  if Hash === data && !( %r[/cs_|/random|/rule] === path )
+    list = []
+    data.each do |id, o|
+      o[:_id] = id
+      list.push o
+    end
+    data = list
+  end
 
+  str = JSON.generate data
   if %r[/cs_] === path
     chrsets.push str
     next
