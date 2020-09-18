@@ -3,12 +3,17 @@ require 'fileutils'
 DST = '/mnt/c/Dropbox'
 SRC = '/mnt/c/Documents'
 
-CMD_PATH = File.expand_path $0
-BAT = open("#{CMD_PATH}.bat", "wb")
-SH = open("#{CMD_PATH}.sh", "w")
+FILES = {
+  BAT: nil,
+  SH: nil,
+}
 
-BAT.puts "rem  created at #{Time.now}"
-SH.puts "# created at #{Time.now}"
+def init(path)
+  FILES[:BAT] = open("#{path}.bat", "wb")
+  FILES[:SH] = open("#{path}.sh", "w")
+  FILES[:BAT].puts "rem  created at #{Time.now}"
+  FILES[:SH].puts "# created at #{Time.now}"
+end
 
 def crawle(tail, paths)
   list = []
@@ -53,36 +58,36 @@ def win(str)
 end
 
 def comment(msg)
-  SH.puts
-  SH.puts "# #{msg}"
+  FILES[:SH].puts
+  FILES[:SH].puts "# #{msg}"
 
-  BAT.puts
-  BAT.puts "rem #{win msg}"
+  FILES[:BAT].puts
+  FILES[:BAT].puts "rem #{win msg}"
 end
 
 def rmtree(tgt)
   FileUtils.rmtree(tgt)
-  SH.puts "# rm -rf #{ tgt }"
-  BAT.puts "rem rd /s /Q #{win tgt}"
+  FILES[:SH].puts "# rm -rf #{ tgt }"
+  FILES[:BAT].puts "rem rd /s /Q #{win tgt}"
 end
 
 def rm(tgts)
   tgts.each do |tgt|
     FileUtils.rm(tgt)
-    SH.puts "# rm -f #{ tgt }"
-    BAT.puts "rem del /s /Q #{win tgt}"
+    FILES[:SH].puts "# rm -f #{ tgt }"
+    FILES[:BAT].puts "rem del /s /Q #{win tgt}"
   end
 end
 
 def mkpath(tgt)
   FileUtils.mkpath(tgt)
-  SH.puts "# mkdir -p #{ tgt }"
-  BAT.puts "rem mkdir -p #{win tgt}"
+  FILES[:SH].puts "# mkdir -p #{ tgt }"
+  FILES[:BAT].puts "rem mkdir -p #{win tgt}"
 end
 
 
 def symlink(src, dest)
   # FileUtils.symlink(src, dest)
-  SH.puts "ln -s #{src} #{dest}"
-  BAT.puts "mklink /D #{win dest} #{win src}"
+  FILES[:SH].puts "ln -s #{src} #{dest}"
+  FILES[:BAT].puts "mklink /D #{win dest} #{win src}"
 end

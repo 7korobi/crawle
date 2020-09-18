@@ -14,11 +14,9 @@
     "name:ancient": "wsl ./ruby task/web/namedb-ancient.rb",
     "name:jpn": "wsl ./ruby task/web/namedb-jpn.rb",
     "name:common": "wsl ./ruby task/web/namedb.rb",
-
     "giji": "run-s giji:yaml giji:json",
     "giji:yaml": "wsl ./ruby task/giji/yaml.rb",
-    "giji:json": "quicktype --src data/giji-json --src-lang json --lang typescript --top-level JsonIndex --out task/giji/index.ts --just-types",
-
+    "giji:json": "quicktype --src data/giji-json --src-lang json --lang typescript --top-level JsonIndex --out cmd/index.ts --just-types",
     "geo": "wsl ./ruby task/web/geodb.rb",
     "dropbox": "run-p dropbox:*",
     "dropbox:clean": "wsl ./ruby task/dropbox/clean.rb",

@@ -1,5 +1,2 @@
 .gitignore
 *.log
-
-*.rb.bat
-*.rb.sh
