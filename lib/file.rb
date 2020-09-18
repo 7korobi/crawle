@@ -15,29 +15,31 @@ def init(path)
   FILES[:SH].puts "# created at #{Time.now}"
 end
 
-def crawle(tail, paths)
+def crawle(tails, paths)
   list = []
 
   paths.each do |rule|
-    Dir.glob("#{SRC}/www/*").each do |src|
-      src = "#{src}/#{tail}"
-      dest = src.gsub /^#{SRC}/, DST
-      list.push [dest, src]
-    end
+    tails.each do |tail|
+      Dir.glob("#{SRC}/www/*").each do |src|
+        src = "#{src}/#{tail}"
+        dest = src.gsub /^#{SRC}/, DST
+        list.push [dest, src, tail]
+      end
 
-    Dir.glob("#{SRC}/#{rule}/#{tail}").each do |src|
-      dest = src.gsub /^#{SRC}/, DST
-      list.push [dest, src]
-    end
+      Dir.glob("#{SRC}/#{rule}/#{tail}").each do |src|
+        dest = src.gsub /^#{SRC}/, DST
+        list.push [dest, src, tail]
+      end
 
-    Dir.glob("#{DST}/#{rule}/#{tail}").each do |dest|
-      src = dest.gsub /^#{DST}/, SRC
-      list.push [dest, src]
+      Dir.glob("#{DST}/#{rule}/#{tail}").each do |dest|
+        src = dest.gsub /^#{DST}/, SRC
+        list.push [dest, src, tail]
+      end
     end
   end
 
-  list.sort.uniq.map do |dest, src|
-    mode = yield dest, src
+  list.sort.uniq.map do |dest, src, tail|
+    mode = yield dest, src, tail
     [mode, dest, src]
   end.sort
 end

@@ -20,7 +20,7 @@
     "geo": "wsl ./ruby task/web/geodb.rb",
     "dropbox": "run-p dropbox:*",
     "dropbox:clean": "wsl ./ruby task/dropbox/clean.rb",
-    "dropbox:node_modules": "wsl ./ruby task/dropbox/node_modules.rb",
+    "dropbox:symlink": "wsl ./ruby task/dropbox/symlink.rb",
     "backup": "run-p -n backup:*",
     "backup:rsync-front": "rsync -avz -e 'ssh -i ../.ssh/id_rsa'          7korobi@giji.f5.si:/home/7korobi/*.zip ../backup/.",
     "backup:rsync-datum": "rsync -avz -e 'ssh -i ../.ssh/id_rsa -p 10000' 7korobi@giji-api.duckdns.org:/home/7korobi/*.zip ../backup/.",

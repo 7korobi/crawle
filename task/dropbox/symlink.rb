@@ -2,16 +2,17 @@
 
 require_relative '../../lib/file'
 
+NOP = -1
 COMPLETE = 0
 EMPTY = 1
 LINK = 2
 
-init('./cmd/node_modules')
+init('./cmd/symlink')
 
-crawle('node_modules', [
+crawle(['node_modules', 'data'], [
   'www/*/*',
   'www/*',
-]) do |dest, src|
+]) do |dest, src, tail|
   if File.symlink?(dest) && File.directory?(src)
     if 0 < Dir.glob("#{src}/*").size
       COMPLETE
@@ -19,7 +20,16 @@ crawle('node_modules', [
       EMPTY
     end
   else
-    LINK
+    case tail
+    when 'data'
+      if File.directory?(src)
+        LINK
+      else
+        NOP
+      end
+    when 'node_modules'
+      LINK
+    end
   end
 
 end.each do |mode, dest, src|
