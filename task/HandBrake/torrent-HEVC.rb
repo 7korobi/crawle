@@ -6,7 +6,7 @@ ENV.win
 
 class Media::Base
   def self.scan_path
-    "S://MEDIA/BitTorrent/**"
+    "/mnt/c/MEDIA/BitTorrent/**"
   end
   def head_path
     @src[/^.*\/BitTorrent/]

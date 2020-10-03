@@ -43,13 +43,14 @@ class Packer
         begin
           cmd = item.do_encode
           if cmd
-            if do_exec(f, cmd + " || " + item.do_reject).success?
+            if do_exec(f, cmd).success?
               @releases.push item.do_release
             end
           else
             @releases.push item.do_release
           end
         rescue Interrupt => e
+          sleep 1
           do_exec f, item.do_reject
           raise e
         end

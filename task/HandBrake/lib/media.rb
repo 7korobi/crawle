@@ -12,15 +12,14 @@ require "./task/HandBrake/lib/media/hevc"
 
 
 STAMP = Time.now.strftime("%Y-%m-%d.%H")
-ENV = Struct.new(:cli, :tmp_dir, :work_dir, :deploy_log, :release_log, :do_del).new
+ENV = Struct.new(:cli, :tmp_dir, :work_dir, :deploy_log, :release_log).new
 def ENV.win
-  ENV.cli = "C://Dropbox/bin/HandBrakeCLI.exe"
-  ENV.work_dir = "S://MEDIA/WORK"
-  ENV.deploy_log = "S://MEDIA/BitTorrent/bat/#{STAMP}-encode.bat"
-  ENV.release_log = "S://MEDIA/BitTorrent/bat/#{STAMP}-release.bat"
-  ENV.do_del = "DEL"
+  ENV.cli = "/mnt/c/Document/bin/HandBrakeCLI.exe"
+  ENV.work_dir = "/mnt/c/MEDIA/WORK"
+  ENV.deploy_log = "/mnt/c/MEDIA/bat/#{STAMP}-encode.bat"
+  ENV.release_log = "/mnt/c/MEDIA/bat/#{STAMP}-release.bat"
   def ENV.path(str)
-    win = str.gsub(/:\/\//,':\\').gsub(/\//,'\\')
+    win = str.gsub(%r[^/mnt/c/],'C:/').gsub(%r[/],'\\')
     %Q|"#{win}"|
   end
 end
@@ -30,7 +29,6 @@ def ENV.mac
   ENV.work_dir = ""
   ENV.deploy_log = "/tmp/#{STAMP}-encode.bat"
   ENV.release_log = "/tmp/#{STAMP}-release.bat"
-  ENV.do_del = "rm"
   def ENV.path(str)
     %Q|"#{str}"|
   end

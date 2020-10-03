@@ -1,3 +1,3 @@
 #! /bin/bash
 
-/home/giji/.rvm/wrappers/default/ruby $*
+/home/vm-7korobi/.rvm/wrappers/default/ruby $*

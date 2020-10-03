@@ -4,6 +4,15 @@ require 'json'
 
 OUTPUT = "./data/giji-json/"
 
+FNAME_SNAP_HD     = "../giji-fire-new/yaml/work_geo_"
+FNAME_OUTPUT_YAML = "../giji-fire-new/yaml/work_geo.yml"
+YAML.load_file(FNAME_OUTPUT_YAML)
+YAML.load_file(FNAME_SNAP_HD + "name.yml")
+YAML.load_file(FNAME_SNAP_HD + "label.yml")
+YAML.load_file(FNAME_SNAP_HD + "etc.yml")
+YAML.load_file(FNAME_SNAP_HD + "dic.yml")
+YAML.load_file(FNAME_SNAP_HD + "orm.yml")
+
 villages = []
 chrsets = []
 Dir.glob('./data/giji-json-vil/*').each do |path|

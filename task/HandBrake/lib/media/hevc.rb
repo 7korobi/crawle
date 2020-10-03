@@ -13,12 +13,12 @@ class Media::HEVC < Media::Handbrake
   def self.track_scan(globbed)
     list = []
     globbed.each do |src|
-      cmd = %Q|#{ENV.cli.path} -i #{src.path} --main-feature --scan|
+      cmd = %Q|#{ENV.cli} -i #{src.path} --main-feature --scan|
       puts "scan... #{src}"
       o, e, s = Open3.capture3 cmd
 
       titles = e.scrub.split(/\+ title /i)
-      main = titles.find{|s| s[/  \+ Main Feature/] } || titles.find{|s| s[/^1\:/] }
+      main = titles.find{|s| s[/  \+ Main Feature/] } || titles.find{|s| s[/^1\:/] }.gsub("\r\n","\n")
       next unless main
 
       video, audio, subtitle = main.split(/  \+ audio tracks:\n|  \+ subtitle tracks:\n/)

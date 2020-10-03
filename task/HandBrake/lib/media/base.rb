@@ -47,7 +47,7 @@ module Media
     end
 
     def do_reject
-      %Q|#{ENV.do_del} #{@work.path}|
+      %Q|rm #{@work}|
     end
 
     def do_encode

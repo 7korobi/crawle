@@ -2,16 +2,16 @@
 # set RUBYOPT=-EUTF-8
 
 class Media::Handbrake < Media::Base
-  MOVIE = ".{AVI,WMV,MKV,MOV,MP4,M4V,F4V,TS,MTS,M2TS,3GP,FLV,ISO}"
+  MOVIE = ".{AVI,WMV,MKV,MOV,MP4,M4V,F4V,TS,MTS,M2TS,3GP,FLV,ISO,avi,wmv,mkv,mov,mp4,m4v,f4v,ts,mts,m2ts,3gp,flv,iso}"
 
   def self.track_scan(globbed)
     list = []
     globbed.each do |src|
-      cmd = %Q|#{ENV.cli.path} -i #{src.path} --main-feature --scan|
+      cmd = %Q|#{ENV.cli} -i #{src.path} --main-feature --scan|
       puts "scan... #{src}"
       o, e, s = Open3.capture3 cmd
       titles = e.scrub.split(/\+ title /i)
-      main = titles.find{|s| s[/  \+ Main Feature/] } || titles.find{|s| s[/^1\:/] }
+      main = titles.find{|s| s[/  \+ Main Feature/] } || titles.find{|s| s[/^1\:/] }.gsub("\r\n","\n")
       next unless main
 
       video, audio, subtitle = main.split(/  \+ audio tracks:\n|  \+ subtitle tracks:\n/)
@@ -92,7 +92,7 @@ class Media::Handbrake < Media::Base
     if File.exists?(@work)
       nil
     else
-      %Q|#{ENV.cli.path} -i #{@src.path} -o #{@work.path} #{@ext} #{format} #{@audio} #{@codec} --verbose=1|
+      %Q|#{ENV.cli} -i #{@src.path} -o #{@work.path} #{@ext} #{format} #{@audio} #{@codec} --verbose=1|
     end
   end
 end
