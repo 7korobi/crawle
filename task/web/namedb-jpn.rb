@@ -3,7 +3,7 @@ require 'open-uri'
 require 'yaml'
 
 
-OUTPUT = "../giji-fire-new/app/yaml/work_namedb_jpn.yml"
+OUTPUT = "../giji/app/yaml/work_namedb_jpn.yml"
 IS_DONE = {}
 
 URL_HEAD = "http://myoujijiten.web.fc2.com/"

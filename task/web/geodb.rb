@@ -11,8 +11,8 @@ FNAME_GEOCODE = "data/geolist_utf8.csv"
 FNAME_ZIPCODE = "data/zipcode_sjis.csv"
 
 
-FNAME_SNAP_HD     = "../giji-fire-new/yaml/work_geo_"
-FNAME_OUTPUT_YAML = "../giji-fire-new/yaml/work_geo.yml"
+FNAME_SNAP_HD     = "../giji/yaml/work_geo_"
+FNAME_OUTPUT_YAML = "../giji/yaml/work_geo.yml"
 
 POSTS_JIS_ZIP = {}
 POSTS_ZIP = {}

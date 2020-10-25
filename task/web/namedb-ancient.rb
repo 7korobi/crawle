@@ -2,7 +2,7 @@ require 'open-uri'
 require 'yaml'
 
 
-OUTPUT = "../giji-fire-new/app/yaml/work_namedb_ancient.yml"
+OUTPUT = "../giji/app/yaml/work_namedb_ancient.yml"
 IS_DONE = {}
 
 URL_HEAD = "http://www.efendi.jp/rq/script/languages/ancient/names/"

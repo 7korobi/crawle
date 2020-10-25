@@ -4,8 +4,8 @@ require 'json'
 
 OUTPUT = "./data/giji-json/"
 
-FNAME_SNAP_HD     = "../giji-fire-new/yaml/work_geo_"
-FNAME_OUTPUT_YAML = "../giji-fire-new/yaml/work_geo.yml"
+FNAME_SNAP_HD     = "../giji/yaml/work_geo_"
+FNAME_OUTPUT_YAML = "../giji/yaml/work_geo.yml"
 YAML.load_file(FNAME_OUTPUT_YAML)
 YAML.load_file(FNAME_SNAP_HD + "name.yml")
 YAML.load_file(FNAME_SNAP_HD + "label.yml")

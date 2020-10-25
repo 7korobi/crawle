@@ -3,7 +3,7 @@ require 'yaml'
 
 URL_HEAD = "http://newcomer.s206.xrea.com/names/alphaNat/"
 
-OUTPUT = "../giji-fire-new/app/yaml/work_namedb.yml"
+OUTPUT = "../giji/app/yaml/work_namedb.yml"
 IS_DONE = {}
 
 CODES = {
