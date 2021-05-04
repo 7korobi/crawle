@@ -20,7 +20,7 @@ class Media::Copy < Media::Base
 
   def do_deploy
     if @dir
-      %Q|mkdir #{@dir}|
+      %Q|mkdir "#{@dir}"|
     end
   end
 
@@ -32,7 +32,7 @@ class Media::Copy < Media::Base
     if File.exists?(@work)
       nil
     else
-      %Q|cp #{@src} #{@work}|
+      %Q|cp "#{@src}" "#{@work}"|
     end
   end
 end

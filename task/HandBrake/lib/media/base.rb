@@ -47,7 +47,7 @@ module Media
     end
 
     def do_reject
-      %Q|rm #{@work}|
+      %Q|rm "#{@work}"|
     end
 
     def do_encode

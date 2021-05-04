@@ -80,7 +80,7 @@ class Media::Handbrake < Media::Base
 
   def do_deploy
     if @dir
-      %Q|mkdir #{@dir}|
+      %Q|mkdir "#{@dir}"|
     end
   end
 
