@@ -6,7 +6,7 @@ require 'yaml'
 OUTPUT = "../giji/app/yaml/work_namedb_jpn.yml"
 IS_DONE = {}
 
-URL_HEAD = "http://myoujijiten.web.fc2.com/"
+URL_HEAD = "http://myoujijiten.web.fc2.com/todouhuken/"
 COUNTRYS = [
   ["CHN", "hokkaido.htm", "北海道"],
   ["CHN", "aomori.htm", "青森"],
